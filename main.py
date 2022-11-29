@@ -24,40 +24,42 @@ except:
     import simplejson as json
 
 BASE_URL = 'https://rumble.com'
-addon_handle = int(sys.argv[1])
-__addon__ = xbmcaddon.Addon()
-addon = __addon__
-__addonname__ = __addon__.getAddonInfo('name')
-__icon__ = __addon__.getAddonInfo('icon')
-addon_version = __addon__.getAddonInfo('version')
+PLUGIN_URL = sys.argv[0]
+PLUGIN_ID = int(sys.argv[1])
+PLUGIN_NAME = PLUGIN_URL.replace("plugin://","")
+
+ADDON = xbmcaddon.Addon()
+ADDON_ICON = ADDON.getAddonInfo('icon')
+ADDON_NAME = ADDON.getAddonInfo('name')
+
+HOME_DIR = 'special://home/addons/'.format(PLUGIN_NAME)
+RESOURCE_DIR = HOME_DIR + 'resources/'
 
 #language
-__language__ = __addon__.getLocalizedString
+__language__ = ADDON.getLocalizedString
 
 try:
-    profile = xbmcvfs.translatePath(__addon__.getAddonInfo('profile').decode('utf-8'))
+    profile = xbmcvfs.translatePath(ADDON.getAddonInfo('profile').decode('utf-8'))
 except:
-    profile = xbmcvfs.translatePath(__addon__.getAddonInfo('profile'))
-try:
-    home = xbmcvfs.translatePath(__addon__.getAddonInfo('path').decode('utf-8'))
-except:
-    home = xbmcvfs.translatePath(__addon__.getAddonInfo('path'))
+    profile = xbmcvfs.translatePath(ADDON.getAddonInfo('profile'))
 
-search_icon = home+'/resources/media/search.png'
-favorite_icon = home+'/resources/media/favorite.png'
-recommended_icon = home+'/resources/media/recommended.png'
-news_icon = home+'/resources/media/news.png'
-viral_icon = home+'/resources/media/viral.png'
-podcast_icon = home+'/resources/media/podcast.png'
-leader_icon = home+'/resources/media/leader.png'
-entertaiment_icon = home+'/resources/media/entertaiment.png'
-sports_icon = home+'/resources/media/sports.png'
-science_icon = home+'/resources/media/science.png'
-technology_icon = home+'/resources/media/technology.png'
-vlog_icon = home+'/resources/media/vlog.png'
-settings_icon = home+'/resources/media/settings.png'
-lang = addon.getSetting('lang')
+search_icon = RESOURCE_DIR+'media/search.png'
+favorite_icon = RESOURCE_DIR+'media/favorite.png'
+recommended_icon = RESOURCE_DIR+'media/recommended.png'
+news_icon = RESOURCE_DIR+'media/news.png'
+viral_icon = RESOURCE_DIR+'media/viral.png'
+podcast_icon = RESOURCE_DIR+'media/podcast.png'
+leader_icon = RESOURCE_DIR+'media/leader.png'
+entertaiment_icon = RESOURCE_DIR+'media/entertaiment.png'
+sports_icon = RESOURCE_DIR+'media/sports.png'
+science_icon = RESOURCE_DIR+'media/science.png'
+technology_icon = RESOURCE_DIR+'media/technology.png'
+vlog_icon = RESOURCE_DIR+'media/vlog.png'
+settings_icon = RESOURCE_DIR+'media/settings.png'
+
+lang = ADDON.getSetting('lang')
 favorites = os.path.join(profile, 'favorites.dat')
+
 if os.path.exists(favorites)==True:
     FAV = open(favorites).read()
 else:
@@ -68,7 +70,7 @@ def notify(message,name=False,iconimage=False,timeShown=5000):
     if name and iconimage:
         xbmc.executebuiltin('Notification(%s, %s, %d, %s)' % (name, message, timeShown, iconimage))
     else:
-        xbmc.executebuiltin('Notification(%s, %s, %d, %s)' % (__addonname__, message, timeShown, __icon__))
+        xbmc.executebuiltin('Notification(%s, %s, %d, %s)' % (ADDON_NAME, message, timeShown, ADDON_ICON))
 
 
 def to_unicode(text, encoding='utf-8', errors='strict'):
@@ -112,27 +114,27 @@ def home_menu():
     # Favorites
     addDir('[B]'+xbmc.getLocalizedString(1036)+'[/B]','',7,favorite_icon,'','','')
     # News
-    addDir('[B]'+xbmc.getLocalizedString(29916)+'[/B]',BASE_URL+'/category/news'.encode('utf-8'),3,news_icon,'','','other')
+    addDir('[B]'+xbmc.getLocalizedString(29916)+'[/B]',BASE_URL+'/category/news',3,news_icon,'','','other')
     # Viral
-    addDir('[B]'+__language__(30050)+'[/B]',BASE_URL+'/category/viral'.encode('utf-8'),3,viral_icon,'','','other')
+    addDir('[B]'+__language__(30050)+'[/B]',BASE_URL+'/category/viral',3,viral_icon,'','','other')
     # Podcasts
-    addDir('[B]'+__language__(30051)+'[/B]',BASE_URL+'/category/podcasts'.encode('utf-8'),3,podcast_icon,'','','other')
+    addDir('[B]'+__language__(30051)+'[/B]',BASE_URL+'/category/podcasts',3,podcast_icon,'','','other')
     # Battle Leaderboard
-    addDir('[B]'+__language__(30052)+'[/B]',BASE_URL+'/battle-leaderboard'.encode('utf-8'),3,leader_icon,'','','top')
+    addDir('[B]'+__language__(30052)+'[/B]',BASE_URL+'/battle-leaderboard',3,leader_icon,'','','top')
     # Entertainment
-    addDir('[B]'+__language__(30053)+'[/B]',BASE_URL+'/category/entertainment'.encode('utf-8'),3,entertaiment_icon,'','','other')
+    addDir('[B]'+__language__(30053)+'[/B]',BASE_URL+'/category/entertainment',3,entertaiment_icon,'','','other')
     # Sports
-    addDir('[B]'+xbmc.getLocalizedString(19548)+'[/B]',BASE_URL+'/category/sports'.encode('utf-8'),3,sports_icon,'','','other')
+    addDir('[B]'+xbmc.getLocalizedString(19548)+'[/B]',BASE_URL+'/category/sports',3,sports_icon,'','','other')
     # Science
-    addDir('[B]'+xbmc.getLocalizedString(29948)+'[/B]',BASE_URL+'/category/science'.encode('utf-8'),3,science_icon,'','','other')
+    addDir('[B]'+xbmc.getLocalizedString(29948)+'[/B]',BASE_URL+'/category/science',3,science_icon,'','','other')
     # Technology
-    addDir('[B]'+__language__(30054)+'[/B]',BASE_URL+'/category/technology'.encode('utf-8'),3,technology_icon,'','','other')
+    addDir('[B]'+__language__(30054)+'[/B]',BASE_URL+'/category/technology',3,technology_icon,'','','other')
     # Vlogs
-    addDir('[B]'+__language__(30055)+'[/B]',BASE_URL+'/category/vlogs'.encode('utf-8'),3,vlog_icon,'','','other')
+    addDir('[B]'+__language__(30055)+'[/B]',BASE_URL+'/category/vlogs',3,vlog_icon,'','','other')
     # Settings
     addDir('[B]'+xbmc.getLocalizedString(5)+'[/B]','',8,settings_icon,'','','')
     SetView('WideList')
-    xbmcplugin.endOfDirectory(addon_handle, cacheToDisc=False)
+    xbmcplugin.endOfDirectory(PLUGIN_ID, cacheToDisc=False)
 
 # search menu
 def select_search():
@@ -142,7 +144,7 @@ def select_search():
     # Search Channel
     addDir('[B]'+__language__(30101)+'[/B]',BASE_URL+'/search/channel?q='.encode('utf-8'),2,search_icon,'','','channel')
     SetView('WideList')
-    xbmcplugin.endOfDirectory(addon_handle)
+    xbmcplugin.endOfDirectory(PLUGIN_ID)
 
 
 
@@ -166,21 +168,21 @@ def pagination(url,page,cat,search=False):
             li=xbmcgui.ListItem(name)
             u=sys.argv[0] + "?mode=3&name=" + urllib.quote_plus(name) + \
             "&url=" + urllib.quote_plus(url) + "&page=" + str(int(page) + 1) + "&cat=" + urllib.quote_plus(cat)+ "&search=" + urllib.quote_plus(search)
-            xbmcplugin.addDirectoryItem(addon_handle, u, li, True)
+            xbmcplugin.addDirectoryItem(PLUGIN_ID, u, li, True)
         elif not search and cat == 'channel' and status == 'true' and int(page) < 10 and int(total) > 15:
             name = "[B]"+__language__(30150) + " " + str(int(page) + 1) + "[/B]"
             li=xbmcgui.ListItem(name)
             u=sys.argv[0] + "?mode=3&name=" + urllib.quote_plus(name) + \
             "&url=" + urllib.quote_plus(url) + "&page=" + str(int(page) + 1) + "&cat=" + urllib.quote_plus(cat)
-            xbmcplugin.addDirectoryItem(addon_handle, u, li, True)
+            xbmcplugin.addDirectoryItem(PLUGIN_ID, u, li, True)
         elif not search and cat == 'other' and status == 'true' and int(page) < 10 and int(total) > 15:
             name = "[B]"+__language__(30150) + " " + str(int(page) + 1) + "[/B]"
             li=xbmcgui.ListItem(name)
             u=sys.argv[0] + "?mode=3&name=" + urllib.quote_plus(name) + \
             "&url=" + urllib.quote_plus(url) + "&page=" + str(int(page) + 1) + "&cat=" + urllib.quote_plus(cat)
-            xbmcplugin.addDirectoryItem(addon_handle, u, li, True)
+            xbmcplugin.addDirectoryItem(PLUGIN_ID, u, li, True)
     SetView('WideList')
-    xbmcplugin.endOfDirectory(addon_handle)
+    xbmcplugin.endOfDirectory(PLUGIN_ID)
 
 
 def get_image(data,id):
@@ -351,12 +353,12 @@ def getFavorites():
 
                 addDir(name.encode('utf-8', 'ignore'),url.encode('utf-8'),mode,str(iconimage),str(fanArt),str(description).encode('utf-8', 'ignore'),cat.encode('utf-8'),folder,True,int(play))
             SetView('WideList')
-            xbmcplugin.endOfDirectory(addon_handle)
+            xbmcplugin.endOfDirectory(PLUGIN_ID)
         else:
             xbmcgui.Dialog().ok('[B]'+xbmc.getLocalizedString(14117)+'[/B]',__language__(30155))
     except:
         SetView('WideList')
-        xbmcplugin.endOfDirectory(addon_handle)
+        xbmcplugin.endOfDirectory(PLUGIN_ID)
 
 
 def addFavorite(name,url,fav_mode,iconimage,fanart,description,cat,folder,play):
@@ -413,7 +415,7 @@ def addDir(name,url,mode,iconimage,fanart,description,cat,folder=True,favorite=F
     if fanart > '':
         li.setProperty('fanart_image', fanart)
     else:
-        li.setProperty('fanart_image', home+'/fanart.jpg')
+        li.setProperty('fanart_image', HOME_DIR+'/fanart.jpg')
     if favorite:
         try:
             name_fav = json.dumps(name.decode('utf-8'))
@@ -429,7 +431,7 @@ def addDir(name,url,mode,iconimage,fanart,description,cat,folder=True,favorite=F
             li.addContextMenuItems(contextMenu)
         except:
             pass
-    xbmcplugin.addDirectoryItem(handle=addon_handle, url=u, listitem=li, isFolder=folder)
+    xbmcplugin.addDirectoryItem(handle=PLUGIN_ID, url=u, listitem=li, isFolder=folder)
 
 
 def SetView(name):
