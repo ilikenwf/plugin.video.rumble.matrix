@@ -433,39 +433,27 @@ def addDir(name,url,mode,iconimage,fanart,description,cat,folder=True,favorite=F
 
 
 def SetView(name):
-    if name == 'Wall':
-        try:
-            xbmc.executebuiltin('Container.SetViewMode(500)')
-        except:
-            pass
-    if name == 'List':
-        try:
-            xbmc.executebuiltin('Container.SetViewMode(50)')
-        except:
-            pass
-    if name == 'Poster':
-        try:
-            xbmc.executebuiltin('Container.SetViewMode(51)')
-        except:
-            pass
-    if name == 'Shift':
-        try:
-            xbmc.executebuiltin('Container.SetViewMode(53)')
-        except:
-            pass
-    if name == 'InfoWall':
-        try:
-            xbmc.executebuiltin('Container.SetViewMode(54)')
-        except:
-            pass
-    if name == 'WideList':
-        try:
-            xbmc.executebuiltin('Container.SetViewMode(55)')
-        except:
-            pass
+
     if name == 'Fanart':
+        view_num = 502
+    elif name == 'Wall':
+        view_num = 500
+    elif name == 'WideList':
+        view_num = 55
+    elif name == 'InfoWall':
+        view_num = 54
+    elif name == 'Shift':
+        view_num = 53
+    elif name == 'Poster':
+        view_num = 51
+    elif name == 'List':
+        view_num = 50
+    else:
+        view_num = 0
+
+    if view_num > 0:
         try:
-            xbmc.executebuiltin('Container.SetViewMode(502)')
+            xbmc.executebuiltin('Container.SetViewMode(' + str( view_num ) + ')')
         except:
             pass
 
