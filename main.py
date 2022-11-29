@@ -23,6 +23,7 @@ try:
 except:
     import simplejson as json
 
+BASE_URL = 'https://rumble.com'
 addon_handle = int(sys.argv[1])
 __addon__ = xbmcaddon.Addon()
 addon = __addon__
@@ -111,23 +112,23 @@ def home_menu():
     # Favorites
     addDir('[B]'+xbmc.getLocalizedString(1036)+'[/B]','',7,favorite_icon,'','','')
     # News
-    addDir('[B]'+xbmc.getLocalizedString(29916)+'[/B]','https://rumble.com/category/news'.encode('utf-8'),3,news_icon,'','','other')
+    addDir('[B]'+xbmc.getLocalizedString(29916)+'[/B]',BASE_URL+'/category/news'.encode('utf-8'),3,news_icon,'','','other')
     # Viral
-    addDir('[B]'+__language__(30050)+'[/B]','https://rumble.com/category/viral'.encode('utf-8'),3,viral_icon,'','','other')
+    addDir('[B]'+__language__(30050)+'[/B]',BASE_URL+'/category/viral'.encode('utf-8'),3,viral_icon,'','','other')
     # Podcasts
-    addDir('[B]'+__language__(30051)+'[/B]','https://rumble.com/category/podcasts'.encode('utf-8'),3,podcast_icon,'','','other')
+    addDir('[B]'+__language__(30051)+'[/B]',BASE_URL+'/category/podcasts'.encode('utf-8'),3,podcast_icon,'','','other')
     # Battle Leaderboard
-    addDir('[B]'+__language__(30052)+'[/B]','https://rumble.com/battle-leaderboard'.encode('utf-8'),3,leader_icon,'','','top')
+    addDir('[B]'+__language__(30052)+'[/B]',BASE_URL+'/battle-leaderboard'.encode('utf-8'),3,leader_icon,'','','top')
     # Entertainment
-    addDir('[B]'+__language__(30053)+'[/B]','https://rumble.com/category/entertainment'.encode('utf-8'),3,entertaiment_icon,'','','other')
+    addDir('[B]'+__language__(30053)+'[/B]',BASE_URL+'/category/entertainment'.encode('utf-8'),3,entertaiment_icon,'','','other')
     # Sports
-    addDir('[B]'+xbmc.getLocalizedString(19548)+'[/B]','https://rumble.com/category/sports'.encode('utf-8'),3,sports_icon,'','','other')
+    addDir('[B]'+xbmc.getLocalizedString(19548)+'[/B]',BASE_URL+'/category/sports'.encode('utf-8'),3,sports_icon,'','','other')
     # Science
-    addDir('[B]'+xbmc.getLocalizedString(29948)+'[/B]','https://rumble.com/category/science'.encode('utf-8'),3,science_icon,'','','other')
+    addDir('[B]'+xbmc.getLocalizedString(29948)+'[/B]',BASE_URL+'/category/science'.encode('utf-8'),3,science_icon,'','','other')
     # Technology
-    addDir('[B]'+__language__(30054)+'[/B]','https://rumble.com/category/technology'.encode('utf-8'),3,technology_icon,'','','other')
+    addDir('[B]'+__language__(30054)+'[/B]',BASE_URL+'/category/technology'.encode('utf-8'),3,technology_icon,'','','other')
     # Vlogs
-    addDir('[B]'+__language__(30055)+'[/B]','https://rumble.com/category/vlogs'.encode('utf-8'),3,vlog_icon,'','','other')
+    addDir('[B]'+__language__(30055)+'[/B]',BASE_URL+'/category/vlogs'.encode('utf-8'),3,vlog_icon,'','','other')
     # Settings
     addDir('[B]'+xbmc.getLocalizedString(5)+'[/B]','',8,settings_icon,'','','')
     SetView('WideList')
@@ -137,9 +138,9 @@ def home_menu():
 def select_search():
 
     # Search Video
-    addDir('[B]'+__language__(30100)+'[/B]','https://rumble.com/search/video?q='.encode('utf-8'),2,search_icon,'','','video')
+    addDir('[B]'+__language__(30100)+'[/B]',BASE_URL+'/search/video?q='.encode('utf-8'),2,search_icon,'','','video')
     # Search Channel
-    addDir('[B]'+__language__(30101)+'[/B]','https://rumble.com/search/channel?q='.encode('utf-8'),2,search_icon,'','','channel')
+    addDir('[B]'+__language__(30101)+'[/B]',BASE_URL+'/search/channel?q='.encode('utf-8'),2,search_icon,'','','channel')
     SetView('WideList')
     xbmcplugin.endOfDirectory(addon_handle)
 
@@ -201,7 +202,7 @@ def list_rumble(url,cat):
                     time_ = month+'/'+day+'/'+year
                 else:
                     time_ = day+'/'+month+'/'+year
-                link2 = 'https://rumble.com'+link
+                link2 = BASE_URL+link
                 #ftr = [3600,60,1]
                 #seconds = sum([a*b for a,b in zip(ftr, map(int,timestr.split(':')))])
                 name2 = '[B]'+name+'[/B]\n[COLOR gold]'+channel+' - [COLOR lime]'+time_+'[/COLOR]'
@@ -219,7 +220,7 @@ def list_rumble(url,cat):
         channel_re = re.compile("<li.+?video-listing-entry.+?<a class=channel-item--a href=(.+?)>.+?<i class='user-image user-image--img user-image--img--id-(.+?)'>.+?<h3 class=channel-item--title>(.+?)</h3>.+?<span class=channel-item--subscribers>(.+?) subscribers</span>.+?</li>",re.DOTALL).findall(data)
         if channel_re !=[]:
             for link, img_id, channel_name, subscribers in channel_re:
-                link2 = 'https://rumble.com'+link
+                link2 = BASE_URL+link
                 img = get_image(data,img_id)
                 name2 = '[B]'+channel_name+'[/B]\n[COLOR palegreen]'+subscribers+' [COLOR yellow]'+__language__(30155)+'[/COLOR]'
                 #abrir pegar url e abrir player
@@ -241,7 +242,7 @@ def list_rumble(url,cat):
                 else:
                     time_ = day+'/'+month+'/'+year
                 time_pt = day+'/'+month+'/'+year
-                link2 = 'https://rumble.com'+link
+                link2 = BASE_URL+link
                 name2 = '[B]'+name+'[/B]\n[COLOR gold]'+channel+' - [COLOR lime]'+time_+'[/COLOR]'
                 addDir(name2.encode('utf-8', 'ignore'),link2.encode('utf-8'),4,str(img),str(img),'',cat.encode('utf-8'),False,True,2)
             total = len(videos_from_channel_re)
@@ -261,7 +262,7 @@ def list_rumble(url,cat):
                 else:
                     time_ = day+'/'+month+'/'+year
                 time_pt = day+'/'+month+'/'+year
-                link2 = 'https://rumble.com'+link
+                link2 = BASE_URL+link
                 name2 = '[B]'+name+'[/B]\n[COLOR gold]'+channel+' - [COLOR lime]'+time_+'[/COLOR]'
                 addDir(name2.encode('utf-8', 'ignore'),link2.encode('utf-8'),4,str(img),str(img),'',cat.encode('utf-8'),False,True,2)
             total = len(top_battle_re)
