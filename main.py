@@ -194,6 +194,10 @@ def get_image(data,id):
 
 
 def list_rumble(url,cat):
+
+    total = 0
+    status = 'false'
+
     if 'search' in url and cat == 'video':
         data = getRequest(url, '')
         videos_re = re.compile('<h3 class=video-item--title>(.+?)</h3><a class=video-item--a href=(.+?)><img class=video-item--img src=(.+?) alt.+?<div class=ellipsis-1>(.+?)<.+?</div>.+?datetime=(.+?)-(.+?)-(.+?)T', re.MULTILINE|re.DOTALL|re.IGNORECASE).findall(data)
@@ -203,36 +207,24 @@ def list_rumble(url,cat):
                     time_ = month+'/'+day+'/'+year
                 else:
                     time_ = day+'/'+month+'/'+year
-                link2 = BASE_URL+link
-                #ftr = [3600,60,1]
-                #seconds = sum([a*b for a,b in zip(ftr, map(int,timestr.split(':')))])
                 name2 = '[B]'+name+'[/B]\n[COLOR gold]'+channel+' - [COLOR lime]'+time_+'[/COLOR]'
-                #abrir pegar url e abrir player
-                addDir(name2.encode('utf-8', 'ignore'),link2.encode('utf-8'),4,str(img),str(img),'',cat.encode('utf-8'),False,True,1)
+                #open get url and open player
+                addDir(name2.encode('utf-8', 'ignore'),(BASE_URL+link).encode('utf-8'),4,str(img),str(img),'',cat.encode('utf-8'),False,True,1)
             total = len(videos_re)
             status = 'true'
-            return status,total
-        else:
-            total = 0
-            status = 'false'
-            return status,total
+
     elif 'search' in url and cat == 'channel':
         data = getRequest(url, '')
         channel_re = re.compile("<li.+?video-listing-entry.+?<a class=channel-item--a href=(.+?)>.+?<i class='user-image user-image--img user-image--img--id-(.+?)'>.+?<h3 class=channel-item--title>(.+?)</h3>.+?<span class=channel-item--subscribers>(.+?) subscribers</span>.+?</li>",re.DOTALL).findall(data)
         if channel_re !=[]:
             for link, img_id, channel_name, subscribers in channel_re:
-                link2 = BASE_URL+link
                 img = get_image(data,img_id)
                 name2 = '[B]'+channel_name+'[/B]\n[COLOR palegreen]'+subscribers+' [COLOR yellow]'+__language__(30155)+'[/COLOR]'
-                #abrir pegar url e abrir player
-                addDir(name2.encode('utf-8', 'ignore'),link2.encode('utf-8'),3,str(img),str(img),'',cat.encode('utf-8'),True,True)
+                #open get url and open player
+                addDir(name2.encode('utf-8', 'ignore'),(BASE_URL+link).encode('utf-8'),3,str(img),str(img),'',cat.encode('utf-8'),True,True)
             total = len(channel_re)
             status = 'true'
-            return status,total
-        else:
-            total = 0
-            status = 'false'
-            return status,total
+
     elif cat == 'channel' or cat == 'other':
         data = getRequest(url, '')
         videos_from_channel_re = re.compile('<h3 class=video-item--title>(.+?)</h3><a class=video-item--a href=(.+?)><img class=video-item--img src=(.+?) alt.+?<div class=ellipsis-1>(.+?)<.+?</div>.+?datetime=(.+?)-(.+?)-(.+?)T', re.MULTILINE|re.DOTALL|re.IGNORECASE).findall(data)
@@ -242,17 +234,12 @@ def list_rumble(url,cat):
                     time_ = month+'/'+day+'/'+year
                 else:
                     time_ = day+'/'+month+'/'+year
-                time_pt = day+'/'+month+'/'+year
-                link2 = BASE_URL+link
                 name2 = '[B]'+name+'[/B]\n[COLOR gold]'+channel+' - [COLOR lime]'+time_+'[/COLOR]'
-                addDir(name2.encode('utf-8', 'ignore'),link2.encode('utf-8'),4,str(img),str(img),'',cat.encode('utf-8'),False,True,2)
+                #open get url and open player
+                addDir(name2.encode('utf-8', 'ignore'),(BASE_URL+link).encode('utf-8'),4,str(img),str(img),'',cat.encode('utf-8'),False,True,2)
             total = len(videos_from_channel_re)
             status = 'true'
-            return status,total
-        else:
-            total = 0
-            status = 'false'
-            return status,total
+
     elif cat == 'top':
         data = getRequest(url, '')
         top_battle_re = re.compile('<h3 class=video-item--title>(.+?)</h3><a class=video-item--a href=(.+?)>.+?<img class=video-item--img-img src=(.+?) alt.+?<div class=ellipsis-1>(.+?)<.+?</div>.+?datetime=(.+?)-(.+?)-(.+?)T', re.MULTILINE|re.DOTALL|re.IGNORECASE).findall(data)
@@ -262,21 +249,13 @@ def list_rumble(url,cat):
                     time_ = month+'/'+day+'/'+year
                 else:
                     time_ = day+'/'+month+'/'+year
-                time_pt = day+'/'+month+'/'+year
-                link2 = BASE_URL+link
                 name2 = '[B]'+name+'[/B]\n[COLOR gold]'+channel+' - [COLOR lime]'+time_+'[/COLOR]'
-                addDir(name2.encode('utf-8', 'ignore'),link2.encode('utf-8'),4,str(img),str(img),'',cat.encode('utf-8'),False,True,2)
+                #open get url and open player
+                addDir(name2.encode('utf-8', 'ignore'),(BASE_URL+link).encode('utf-8'),4,str(img),str(img),'',cat.encode('utf-8'),False,True,2)
             total = len(top_battle_re)
             status = 'true'
-            return status,total
-        else:
-            total = 0
-            status = 'false'
-            return status,total
-    else:
-        total = 0
-        status = 'false'
-        return status,total
+
+    return status, total
 
 
 def resolver(url):
