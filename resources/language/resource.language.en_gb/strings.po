@@ -10,7 +10,7 @@ msgctxt "#30000"
 msgid "Playback Method"
 msgstr ""
 
-#lib\main.py Main menu
+#main.py Main menu
 msgctxt "#30050"
 msgid "Viral"
 msgstr ""
@@ -44,7 +44,7 @@ msgctxt "#30101"
 msgid "Search Channels"
 msgstr ""
 
-#lib\main.py Other
+#main.py Other
 msgctxt "#30150"
 msgid "Page"
 msgstr ""
