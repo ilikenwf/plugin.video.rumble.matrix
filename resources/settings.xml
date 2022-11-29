@@ -1,5 +1,8 @@
 <settings>
-<category label="Language">
-	<setting label="Language" id="lang" type="enum" values="English|Português" default="0" />
-</category>
+	<category label="14206">
+		<setting id="playbackMethod" label="30000" type="enum" default="0" values="Auto Play Highest Quality|Auto Play Lowest Quality|Select Quality Via Dialog"/>
+	</category>
+	<category label="Language">
+		<setting label="Language" id="lang" type="enum" values="English|Português" default="0" />
+	</category>
 </settings>
