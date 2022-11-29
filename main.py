@@ -79,6 +79,7 @@ def to_unicode(text, encoding='utf-8', errors='strict'):
         return text.decode(encoding, errors=errors)
     return text
 
+
 def get_search_string(heading='', message=''):
     """Ask the user for a search string"""
     search_string = None
@@ -105,6 +106,7 @@ def getRequest(url, ref):
         #pass
         response = ''
         return response
+
 
 # main menu
 def home_menu():
@@ -136,8 +138,9 @@ def home_menu():
     SetView('WideList')
     xbmcplugin.endOfDirectory(PLUGIN_ID, cacheToDisc=False)
 
+
 # search menu
-def select_search():
+def search_menu():
 
     # Search Video
     addDir('[B]'+__language__(30100)+'[/B]',BASE_URL+'/search/video?q='.encode('utf-8'),2,search_icon,'','','video')
@@ -145,9 +148,6 @@ def select_search():
     addDir('[B]'+__language__(30101)+'[/B]',BASE_URL+'/search/channel?q='.encode('utf-8'),2,search_icon,'','','channel')
     SetView('WideList')
     xbmcplugin.endOfDirectory(PLUGIN_ID)
-
-
-
 
 
 def pagination(url,page,cat,search=False):
@@ -280,29 +280,44 @@ def list_rumble(url,cat):
         return status,total
 
 
-
 def resolver(url):
-    data = getRequest(url, '')
+
+    playbackMethod = ADDON.getSetting('playbackMethod')
+
+    mediaURL = None
+
+    if playbackMethod == '2':
+       urls = []
+
+    data = getRequest(url)
     embed_re = re.compile(',"embedUrl":"(.*?)",', re.MULTILINE|re.DOTALL|re.IGNORECASE).findall(data)
-    if embed_re !=[]:
-        data = getRequest(embed_re[0], '')
-        sd_480 = re.compile('480,.+?url.+?:"(.*?)",', re.MULTILINE|re.DOTALL|re.IGNORECASE).findall(data)
-        hd_720 = re.compile('720,.+?url.+?:"(.*?)",', re.MULTILINE|re.DOTALL|re.IGNORECASE).findall(data)
-        fhd_1080 = re.compile('1080,.+?url.+?:"(.*?)",', re.MULTILINE|re.DOTALL|re.IGNORECASE).findall(data)
-        sd_360 = re.compile('360,.+?url.+?:"(.*?)",', re.MULTILINE|re.DOTALL|re.IGNORECASE).findall(data)
-        if fhd_1080 !=[]:
-            url = fhd_1080[0].replace('\\/', '/')
-        elif hd_720 !=[]:
-            url = hd_720[0].replace('\\/', '/')
-        elif sd_480 !=[]:
-            url = sd_480[0].replace('\\/', '/')
-        elif sd_360 !=[]:
-            url = sd_360[0].replace('\\/', '/')
-        else:
-            url = ''
-    else:
-        url = ''
-    return url
+    if embed_re:
+        data = getRequest(embed_re[0])
+        sizes = [ '1080', '720', '480', '360' ]
+
+        if playbackMethod == '1':
+            sizes = sizes[::-1]
+
+        for quality in sizes:
+
+            matches = re.compile('"' + quality + '":.+?url.+?:"(.*?)",', re.MULTILINE|re.DOTALL|re.IGNORECASE).findall(data)
+
+            if matches:
+                if playbackMethod == '2':
+                    urls.append(( quality, matches[0] ))
+                else:
+                    mediaURL = matches[0]
+                    break
+
+        if playbackMethod == '2':
+            if len(urls) > 0:
+                selectedIndex = xbmcgui.Dialog().select(
+                    'Select Quality', [(sourceItem[0] or '?') for sourceItem in urls]
+                )
+                if selectedIndex != -1:
+                    mediaURL = urls[selectedIndex][1]
+
+    return mediaURL.replace('\/', '/')
 
 
 def play_video(name, url, iconimage, play=2):
@@ -317,7 +332,6 @@ def play_video(name, url, iconimage, play=2):
         li.setArt({"icon": iconimage, "thumb": iconimage})
         li.setInfo(type='video', infoLabels={'Title': name, 'plot': ''})
         xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, li)
-
 
 
 def search_items(url,cat):
@@ -479,7 +493,6 @@ def get_params():
     return param
 
 
-
 def main():
     params=get_params()
     url=None
@@ -552,7 +565,7 @@ def main():
     if mode==None:
         home_menu()
     elif mode==1:
-        select_search()
+        search_menu()
     elif mode==2:
         search_items(url,cat)
     elif mode==3:
