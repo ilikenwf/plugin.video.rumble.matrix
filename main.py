@@ -97,7 +97,7 @@ def getRequest(url, ref=''):
             ref = url
 
         cj = cookielib.CookieJar()
-        opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
+        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
         opener.addheaders=[('Accept-Language', 'en-gb,en;q=0.5'),('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36'),('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9'), ('Referer', ref)]
         data = opener.open(url).read()
         response = data.decode('utf-8')
@@ -283,6 +283,8 @@ def resolver(url):
 
     playbackMethod = ADDON.getSetting('playbackMethod')
 
+    # palyback options - 0: large to small, 1: small to large, 2: quality select
+
     mediaURL = None
 
     if playbackMethod == '2':
@@ -294,6 +296,7 @@ def resolver(url):
         data = getRequest(embed_re[0])
         sizes = [ '1080', '720', '480', '360' ]
 
+        # reverses array - small to large
         if playbackMethod == '1':
             sizes = sizes[::-1]
 
@@ -308,6 +311,7 @@ def resolver(url):
                     mediaURL = matches[0]
                     break
 
+        # quality select
         if playbackMethod == '2':
             if len(urls) > 0:
                 selectedIndex = xbmcgui.Dialog().select(
