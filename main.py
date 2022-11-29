@@ -324,16 +324,16 @@ def resolver(url):
 
 
 def play_video(name, url, iconimage, play=2):
+
     url = resolver(url)
+
+    li = xbmcgui.ListItem(name, path=url)
+    li.setArt({"icon": iconimage, "thumb": iconimage})
+    li.setInfo(type='video', infoLabels={'Title': name, 'plot': ''})
+
     if play == 1:
-        li = xbmcgui.ListItem(name, path=url)
-        li.setArt({"icon": iconimage, "thumb": iconimage})
-        li.setInfo(type='video', infoLabels={'Title': name, 'plot': ''})
         xbmc.Player().play(item=url, listitem=li)
     elif play == 2:
-        li = xbmcgui.ListItem(name, path=url)
-        li.setArt({"icon": iconimage, "thumb": iconimage})
-        li.setInfo(type='video', infoLabels={'Title': name, 'plot': ''})
         xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, li)
 
 
