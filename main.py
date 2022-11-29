@@ -69,7 +69,7 @@ def setlang(id):
         elif id=='news':
             return 'News'
         elif id=='battle-leaderboard':
-            return 'Batle leaderboard'
+            return 'Battle leaderboard'
         elif id=='entertainment':
             return 'Entertaiment'
         elif id=='sports':
@@ -192,15 +192,15 @@ def getRequest(url, ref):
 def home_menu():
     addDir('[B]'+setlang('search')+'[/B]','',1,search_icon,'','','')
     addDir('[B]'+setlang('favorites')+'[/B]','',7,favorite_icon,'','','')
-    addDir('[B]'+setlang('news')+'[/B]','https://rumble.com/category/news'.encode('utf-8'),3,news_icon,'','','orther')
-    addDir('[B]Viral[/B]','https://rumble.com/category/viral'.encode('utf-8'),3,viral_icon,'','','orther')
-    addDir('[B]Podcast[/B]','https://rumble.com/category/podcasts'.encode('utf-8'),3,podcast_icon,'','','orther')
+    addDir('[B]'+setlang('news')+'[/B]','https://rumble.com/category/news'.encode('utf-8'),3,news_icon,'','','other')
+    addDir('[B]Viral[/B]','https://rumble.com/category/viral'.encode('utf-8'),3,viral_icon,'','','other')
+    addDir('[B]Podcast[/B]','https://rumble.com/category/podcasts'.encode('utf-8'),3,podcast_icon,'','','other')
     addDir('[B]'+setlang('battle-leaderboard')+'[/B]','https://rumble.com/battle-leaderboard'.encode('utf-8'),3,leader_icon,'','','top')
-    addDir('[B]'+setlang('entertainment')+'[/B]','https://rumble.com/category/entertainment'.encode('utf-8'),3,entertaiment_icon,'','','orther')
-    addDir('[B]'+setlang('sports')+'[/B]','https://rumble.com/category/sports'.encode('utf-8'),3,sports_icon,'','','orther')
-    addDir('[B]'+setlang('science')+'[/B]','https://rumble.com/category/science'.encode('utf-8'),3,science_icon,'','','orther')
-    addDir('[B]'+setlang('technology')+'[/B]','https://rumble.com/category/technology'.encode('utf-8'),3,technology_icon,'','','orther')
-    addDir('[B]Vlogs[/B]','https://rumble.com/category/vlogs'.encode('utf-8'),3,vlog_icon,'','','orther')
+    addDir('[B]'+setlang('entertainment')+'[/B]','https://rumble.com/category/entertainment'.encode('utf-8'),3,entertaiment_icon,'','','other')
+    addDir('[B]'+setlang('sports')+'[/B]','https://rumble.com/category/sports'.encode('utf-8'),3,sports_icon,'','','other')
+    addDir('[B]'+setlang('science')+'[/B]','https://rumble.com/category/science'.encode('utf-8'),3,science_icon,'','','other')
+    addDir('[B]'+setlang('technology')+'[/B]','https://rumble.com/category/technology'.encode('utf-8'),3,technology_icon,'','','other')
+    addDir('[B]Vlogs[/B]','https://rumble.com/category/vlogs'.encode('utf-8'),3,vlog_icon,'','','other')
     addDir('[B]'+setlang('config')+'[/B]','',8,settings_icon,'','','')
     SetView('WideList')
     xbmcplugin.endOfDirectory(addon_handle, cacheToDisc=False)
@@ -220,7 +220,7 @@ def pagination(url,page,cat,search=False):
     if url > '':
         if search and cat == 'video':
             pageUrl = url + search + "&page=" + str(int(page))
-        elif cat == 'channel' or cat == 'orther':
+        elif cat == 'channel' or cat == 'other':
             pageUrl = url + "?page=" + str(int(page))
         if int(page) == 1:
             if search:
@@ -241,7 +241,7 @@ def pagination(url,page,cat,search=False):
             u=sys.argv[0] + "?mode=3&name=" + urllib.quote_plus(name) + \
             "&url=" + urllib.quote_plus(url) + "&page=" + str(int(page) + 1) + "&cat=" + urllib.quote_plus(cat)
             xbmcplugin.addDirectoryItem(addon_handle, u, li, True)
-        elif not search and cat == 'orther' and status == 'true' and int(page) < 10 and int(total) > 15:
+        elif not search and cat == 'other' and status == 'true' and int(page) < 10 and int(total) > 15:
             name = "[B]"+setlang('page') + " " + str(int(page) + 1) + "[/B]"
             li=xbmcgui.ListItem(name)
             u=sys.argv[0] + "?mode=3&name=" + urllib.quote_plus(name) + \
@@ -263,7 +263,7 @@ def get_image(data,id):
 def list_rumble(url,cat):
     if 'search' in url and cat == 'video':
         data = getRequest(url, '')
-        videos_re = re.compile('<h3 class=video-item--title>(.+?)</h3><a class=video-item--a href=(.+?)><img class=video-item--img src=(.+?) alt.+?<div class=ellipsis-1>(.+?)</div>.+?datetime=(.+?)-(.+?)-(.+?)T', re.MULTILINE|re.DOTALL|re.IGNORECASE).findall(data)    
+        videos_re = re.compile('<h3 class=video-item--title>(.+?)</h3><a class=video-item--a href=(.+?)><img class=video-item--img src=(.+?) alt.+?<div class=ellipsis-1>(.+?)<.+?</div>.+?datetime=(.+?)-(.+?)-(.+?)T', re.MULTILINE|re.DOTALL|re.IGNORECASE).findall(data)    
         if videos_re !=[]:
             for name, link, img, channel, year, month, day in videos_re:
                 if int(lang) == 0:
@@ -300,9 +300,9 @@ def list_rumble(url,cat):
             total = 0
             status = 'false'
             return status,total
-    elif cat == 'channel' or cat == 'orther':
+    elif cat == 'channel' or cat == 'other':
         data = getRequest(url, '')
-        videos_from_channel_re = re.compile('<h3 class=video-item--title>(.+?)</h3><a class=video-item--a href=(.+?)><img class=video-item--img src=(.+?) alt.+?<div class=ellipsis-1>(.+?)</div>.+?datetime=(.+?)-(.+?)-(.+?)T', re.MULTILINE|re.DOTALL|re.IGNORECASE).findall(data)
+        videos_from_channel_re = re.compile('<h3 class=video-item--title>(.+?)</h3><a class=video-item--a href=(.+?)><img class=video-item--img src=(.+?) alt.+?<div class=ellipsis-1>(.+?)<.+?</div>.+?datetime=(.+?)-(.+?)-(.+?)T', re.MULTILINE|re.DOTALL|re.IGNORECASE).findall(data)
         if videos_from_channel_re !=[]:
             for name, link, img, channel, year, month, day in videos_from_channel_re:
                 if int(lang) == 0:
@@ -322,7 +322,7 @@ def list_rumble(url,cat):
             return status,total
     elif cat == 'top':
         data = getRequest(url, '')
-        top_battle_re = re.compile('<h3 class=video-item--title>(.+?)</h3><a class=video-item--a href=(.+?)>.+?<img class=video-item--img-img src=(.+?) alt.+?<div class=ellipsis-1>(.+?)</div>.+?datetime=(.+?)-(.+?)-(.+?)T', re.MULTILINE|re.DOTALL|re.IGNORECASE).findall(data)
+        top_battle_re = re.compile('<h3 class=video-item--title>(.+?)</h3><a class=video-item--a href=(.+?)>.+?<img class=video-item--img-img src=(.+?) alt.+?<div class=ellipsis-1>(.+?)<.+?</div>.+?datetime=(.+?)-(.+?)-(.+?)T', re.MULTILINE|re.DOTALL|re.IGNORECASE).findall(data)
         if top_battle_re !=[]:
             for name, link, img, channel, year, month, day in top_battle_re:
                 if int(lang) == 0:
