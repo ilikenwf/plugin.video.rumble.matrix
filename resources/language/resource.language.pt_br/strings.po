@@ -8,9 +8,9 @@ msgstr ""
 #resources/settings.xml
 msgctxt "#30000"
 msgid "Playback Method"
-msgstr "M�todo de Reprodu��o"
+msgstr "Método de Reprodução"
 
-#lib\main.py Main menu
+#main.py Main menu
 msgctxt "#30050"
 msgid "Viral"
 msgstr "Viral"
@@ -21,7 +21,7 @@ msgstr "Podcast"
 
 msgctxt "#30052"
 msgid "Battle Leaderboard"
-msgstr "Quadro de liderança"
+msgstr "Quadro de lideranÃ§a"
 
 msgctxt "#30053"
 msgid "Entertainment"
@@ -44,7 +44,7 @@ msgctxt "#30101"
 msgid "Search Channels"
 msgstr "Pesquisar por canal"
 
-#lib\main.py Other
+#main.py Other
 msgctxt "#30150"
 msgid "Page"
 msgstr "Pagina"
