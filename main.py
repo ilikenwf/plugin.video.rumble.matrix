@@ -23,40 +23,43 @@ try:
 except:
     import simplejson as json
 
-addon_handle = int(sys.argv[1])
-__addon__ = xbmcaddon.Addon()
-addon = __addon__
-__addonname__ = __addon__.getAddonInfo('name')
-__icon__ = __addon__.getAddonInfo('icon')
-addon_version = __addon__.getAddonInfo('version')
+BASE_URL = 'https://rumble.com'
+PLUGIN_URL = sys.argv[0]
+PLUGIN_ID = int(sys.argv[1])
+PLUGIN_NAME = PLUGIN_URL.replace("plugin://","")
+
+ADDON = xbmcaddon.Addon()
+ADDON_ICON = ADDON.getAddonInfo('icon')
+ADDON_NAME = ADDON.getAddonInfo('name')
+
+HOME_DIR = 'special://home/addons/'.format(PLUGIN_NAME)
+RESOURCE_DIR = HOME_DIR + 'resources/'
 
 #language
-__language__ = __addon__.getLocalizedString
+__language__ = ADDON.getLocalizedString
 
 try:
-    profile = xbmcvfs.translatePath(__addon__.getAddonInfo('profile').decode('utf-8'))
+    profile = xbmcvfs.translatePath(ADDON.getAddonInfo('profile').decode('utf-8'))
 except:
-    profile = xbmcvfs.translatePath(__addon__.getAddonInfo('profile'))
-try:
-    home = xbmcvfs.translatePath(__addon__.getAddonInfo('path').decode('utf-8'))
-except:
-    home = xbmcvfs.translatePath(__addon__.getAddonInfo('path'))
+    profile = xbmcvfs.translatePath(ADDON.getAddonInfo('profile'))
 
-search_icon = home+'/resources/media/search.png'
-favorite_icon = home+'/resources/media/favorite.png'
-recommended_icon = home+'/resources/media/recommended.png'
-news_icon = home+'/resources/media/news.png'
-viral_icon = home+'/resources/media/viral.png'
-podcast_icon = home+'/resources/media/podcast.png'
-leader_icon = home+'/resources/media/leader.png'
-entertaiment_icon = home+'/resources/media/entertaiment.png'
-sports_icon = home+'/resources/media/sports.png'
-science_icon = home+'/resources/media/science.png'
-technology_icon = home+'/resources/media/technology.png'
-vlog_icon = home+'/resources/media/vlog.png'
-settings_icon = home+'/resources/media/settings.png'
-lang = addon.getSetting('lang')
+search_icon = RESOURCE_DIR+'media/search.png'
+favorite_icon = RESOURCE_DIR+'media/favorite.png'
+recommended_icon = RESOURCE_DIR+'media/recommended.png'
+news_icon = RESOURCE_DIR+'media/news.png'
+viral_icon = RESOURCE_DIR+'media/viral.png'
+podcast_icon = RESOURCE_DIR+'media/podcast.png'
+leader_icon = RESOURCE_DIR+'media/leader.png'
+entertaiment_icon = RESOURCE_DIR+'media/entertaiment.png'
+sports_icon = RESOURCE_DIR+'media/sports.png'
+science_icon = RESOURCE_DIR+'media/science.png'
+technology_icon = RESOURCE_DIR+'media/technology.png'
+vlog_icon = RESOURCE_DIR+'media/vlog.png'
+settings_icon = RESOURCE_DIR+'media/settings.png'
+
+lang = ADDON.getSetting('lang')
 favorites = os.path.join(profile, 'favorites.dat')
+
 if os.path.exists(favorites)==True:
     FAV = open(favorites).read()
 else:
@@ -67,7 +70,7 @@ def notify(message,name=False,iconimage=False,timeShown=5000):
     if name and iconimage:
         xbmc.executebuiltin('Notification(%s, %s, %d, %s)' % (name, message, timeShown, iconimage))
     else:
-        xbmc.executebuiltin('Notification(%s, %s, %d, %s)' % (__addonname__, message, timeShown, __icon__))
+        xbmc.executebuiltin('Notification(%s, %s, %d, %s)' % (ADDON_NAME, message, timeShown, ADDON_ICON))
 
 
 def to_unicode(text, encoding='utf-8', errors='strict'):
@@ -75,6 +78,7 @@ def to_unicode(text, encoding='utf-8', errors='strict'):
     if isinstance(text, bytes):
         return text.decode(encoding, errors=errors)
     return text
+
 
 def get_search_string(heading='', message=''):
     """Ask the user for a search string"""
@@ -86,22 +90,22 @@ def get_search_string(heading='', message=''):
     return search_string
 
 
-def getRequest(url, ref):
+def getRequest(url, ref=''):
+
     try:
-        if ref > '':
-            ref2 = ref
-        else:
-            ref2 = url
+        if ref == '':
+            ref = url
+
         cj = cookielib.CookieJar()
         opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
-        opener.addheaders=[('Accept-Language', 'en-gb,en;q=0.5'),('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36'),('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9'), ('Referer', ref2)]
+        opener.addheaders=[('Accept-Language', 'en-gb,en;q=0.5'),('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36'),('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9'), ('Referer', ref)]
         data = opener.open(url).read()
         response = data.decode('utf-8')
-        return response
     except:
-        #pass
         response = ''
-        return response
+
+    return response
+
 
 # main menu
 def home_menu():
@@ -111,40 +115,38 @@ def home_menu():
     # Favorites
     addDir('[B]'+xbmc.getLocalizedString(1036)+'[/B]','',7,favorite_icon,'','','')
     # News
-    addDir('[B]'+xbmc.getLocalizedString(29916)+'[/B]','https://rumble.com/category/news'.encode('utf-8'),3,news_icon,'','','other')
+    addDir('[B]'+xbmc.getLocalizedString(29916)+'[/B]',BASE_URL+'/category/news',3,news_icon,'','','other')
     # Viral
-    addDir('[B]'+__language__(30050)+'[/B]','https://rumble.com/category/viral'.encode('utf-8'),3,viral_icon,'','','other')
+    addDir('[B]'+__language__(30050)+'[/B]',BASE_URL+'/category/viral',3,viral_icon,'','','other')
     # Podcasts
-    addDir('[B]'+__language__(30051)+'[/B]','https://rumble.com/category/podcasts'.encode('utf-8'),3,podcast_icon,'','','other')
+    addDir('[B]'+__language__(30051)+'[/B]',BASE_URL+'/category/podcasts',3,podcast_icon,'','','other')
     # Battle Leaderboard
-    addDir('[B]'+__language__(30052)+'[/B]','https://rumble.com/battle-leaderboard'.encode('utf-8'),3,leader_icon,'','','top')
+    addDir('[B]'+__language__(30052)+'[/B]',BASE_URL+'/battle-leaderboard',3,leader_icon,'','','top')
     # Entertainment
-    addDir('[B]'+__language__(30053)+'[/B]','https://rumble.com/category/entertainment'.encode('utf-8'),3,entertaiment_icon,'','','other')
+    addDir('[B]'+__language__(30053)+'[/B]',BASE_URL+'/category/entertainment',3,entertaiment_icon,'','','other')
     # Sports
-    addDir('[B]'+xbmc.getLocalizedString(19548)+'[/B]','https://rumble.com/category/sports'.encode('utf-8'),3,sports_icon,'','','other')
+    addDir('[B]'+xbmc.getLocalizedString(19548)+'[/B]',BASE_URL+'/category/sports',3,sports_icon,'','','other')
     # Science
-    addDir('[B]'+xbmc.getLocalizedString(29948)+'[/B]','https://rumble.com/category/science'.encode('utf-8'),3,science_icon,'','','other')
+    addDir('[B]'+xbmc.getLocalizedString(29948)+'[/B]',BASE_URL+'/category/science',3,science_icon,'','','other')
     # Technology
-    addDir('[B]'+__language__(30054)+'[/B]','https://rumble.com/category/technology'.encode('utf-8'),3,technology_icon,'','','other')
+    addDir('[B]'+__language__(30054)+'[/B]',BASE_URL+'/category/technology',3,technology_icon,'','','other')
     # Vlogs
-    addDir('[B]'+__language__(30055)+'[/B]','https://rumble.com/category/vlogs'.encode('utf-8'),3,vlog_icon,'','','other')
+    addDir('[B]'+__language__(30055)+'[/B]',BASE_URL+'/category/vlogs',3,vlog_icon,'','','other')
     # Settings
     addDir('[B]'+xbmc.getLocalizedString(5)+'[/B]','',8,settings_icon,'','','')
     SetView('WideList')
-    xbmcplugin.endOfDirectory(addon_handle, cacheToDisc=False)
+    xbmcplugin.endOfDirectory(PLUGIN_ID, cacheToDisc=False)
+
 
 # search menu
-def select_search():
+def search_menu():
 
     # Search Video
-    addDir('[B]'+__language__(30100)+'[/B]','https://rumble.com/search/video?q='.encode('utf-8'),2,search_icon,'','','video')
+    addDir('[B]'+__language__(30100)+'[/B]',BASE_URL+'/search/video?q='.encode('utf-8'),2,search_icon,'','','video')
     # Search Channel
-    addDir('[B]'+__language__(30101)+'[/B]','https://rumble.com/search/channel?q='.encode('utf-8'),2,search_icon,'','','channel')
+    addDir('[B]'+__language__(30101)+'[/B]',BASE_URL+'/search/channel?q='.encode('utf-8'),2,search_icon,'','','channel')
     SetView('WideList')
-    xbmcplugin.endOfDirectory(addon_handle)
-
-
-
+    xbmcplugin.endOfDirectory(PLUGIN_ID)
 
 
 def pagination(url,page,cat,search=False):
@@ -165,21 +167,21 @@ def pagination(url,page,cat,search=False):
             li=xbmcgui.ListItem(name)
             u=sys.argv[0] + "?mode=3&name=" + urllib.quote_plus(name) + \
             "&url=" + urllib.quote_plus(url) + "&page=" + str(int(page) + 1) + "&cat=" + urllib.quote_plus(cat)+ "&search=" + urllib.quote_plus(search)
-            xbmcplugin.addDirectoryItem(addon_handle, u, li, True)
+            xbmcplugin.addDirectoryItem(PLUGIN_ID, u, li, True)
         elif not search and cat == 'channel' and status == 'true' and int(page) < 10 and int(total) > 15:
             name = "[B]"+__language__(30150) + " " + str(int(page) + 1) + "[/B]"
             li=xbmcgui.ListItem(name)
             u=sys.argv[0] + "?mode=3&name=" + urllib.quote_plus(name) + \
             "&url=" + urllib.quote_plus(url) + "&page=" + str(int(page) + 1) + "&cat=" + urllib.quote_plus(cat)
-            xbmcplugin.addDirectoryItem(addon_handle, u, li, True)
+            xbmcplugin.addDirectoryItem(PLUGIN_ID, u, li, True)
         elif not search and cat == 'other' and status == 'true' and int(page) < 10 and int(total) > 15:
             name = "[B]"+__language__(30150) + " " + str(int(page) + 1) + "[/B]"
             li=xbmcgui.ListItem(name)
             u=sys.argv[0] + "?mode=3&name=" + urllib.quote_plus(name) + \
             "&url=" + urllib.quote_plus(url) + "&page=" + str(int(page) + 1) + "&cat=" + urllib.quote_plus(cat)
-            xbmcplugin.addDirectoryItem(addon_handle, u, li, True)
+            xbmcplugin.addDirectoryItem(PLUGIN_ID, u, li, True)
     SetView('WideList')
-    xbmcplugin.endOfDirectory(addon_handle)
+    xbmcplugin.endOfDirectory(PLUGIN_ID)
 
 
 def get_image(data,id):
@@ -192,6 +194,10 @@ def get_image(data,id):
 
 
 def list_rumble(url,cat):
+
+    total = 0
+    status = 'false'
+
     if 'search' in url and cat == 'video':
         data = getRequest(url, '')
         videos_re = re.compile('<h3 class=video-item--title>(.+?)</h3><a class=video-item--a href=(.+?)><img class=video-item--img src=(.+?) alt.+?<div class=ellipsis-1>(.+?)<.+?</div>.+?datetime=(.+?)-(.+?)-(.+?)T', re.MULTILINE|re.DOTALL|re.IGNORECASE).findall(data)
@@ -201,36 +207,24 @@ def list_rumble(url,cat):
                     time_ = month+'/'+day+'/'+year
                 else:
                     time_ = day+'/'+month+'/'+year
-                link2 = 'https://rumble.com'+link
-                #ftr = [3600,60,1]
-                #seconds = sum([a*b for a,b in zip(ftr, map(int,timestr.split(':')))])
                 name2 = '[B]'+name+'[/B]\n[COLOR gold]'+channel+' - [COLOR lime]'+time_+'[/COLOR]'
-                #abrir pegar url e abrir player
-                addDir(name2.encode('utf-8', 'ignore'),link2.encode('utf-8'),4,str(img),str(img),'',cat.encode('utf-8'),False,True,1)
+                #open get url and open player
+                addDir(name2.encode('utf-8', 'ignore'),(BASE_URL+link).encode('utf-8'),4,str(img),str(img),'',cat.encode('utf-8'),False,True,1)
             total = len(videos_re)
             status = 'true'
-            return status,total
-        else:
-            total = 0
-            status = 'false'
-            return status,total
+
     elif 'search' in url and cat == 'channel':
         data = getRequest(url, '')
         channel_re = re.compile("<li.+?video-listing-entry.+?<a class=channel-item--a href=(.+?)>.+?<i class='user-image user-image--img user-image--img--id-(.+?)'>.+?<h3 class=channel-item--title>(.+?)</h3>.+?<span class=channel-item--subscribers>(.+?) subscribers</span>.+?</li>",re.DOTALL).findall(data)
         if channel_re !=[]:
             for link, img_id, channel_name, subscribers in channel_re:
-                link2 = 'https://rumble.com'+link
                 img = get_image(data,img_id)
                 name2 = '[B]'+channel_name+'[/B]\n[COLOR palegreen]'+subscribers+' [COLOR yellow]'+__language__(30155)+'[/COLOR]'
-                #abrir pegar url e abrir player
-                addDir(name2.encode('utf-8', 'ignore'),link2.encode('utf-8'),3,str(img),str(img),'',cat.encode('utf-8'),True,True)
+                #open get url and open player
+                addDir(name2.encode('utf-8', 'ignore'),(BASE_URL+link).encode('utf-8'),3,str(img),str(img),'',cat.encode('utf-8'),True,True)
             total = len(channel_re)
             status = 'true'
-            return status,total
-        else:
-            total = 0
-            status = 'false'
-            return status,total
+
     elif cat == 'channel' or cat == 'other':
         data = getRequest(url, '')
         videos_from_channel_re = re.compile('<h3 class=video-item--title>(.+?)</h3><a class=video-item--a href=(.+?)><img class=video-item--img src=(.+?) alt.+?<div class=ellipsis-1>(.+?)<.+?</div>.+?datetime=(.+?)-(.+?)-(.+?)T', re.MULTILINE|re.DOTALL|re.IGNORECASE).findall(data)
@@ -240,17 +234,12 @@ def list_rumble(url,cat):
                     time_ = month+'/'+day+'/'+year
                 else:
                     time_ = day+'/'+month+'/'+year
-                time_pt = day+'/'+month+'/'+year
-                link2 = 'https://rumble.com'+link
                 name2 = '[B]'+name+'[/B]\n[COLOR gold]'+channel+' - [COLOR lime]'+time_+'[/COLOR]'
-                addDir(name2.encode('utf-8', 'ignore'),link2.encode('utf-8'),4,str(img),str(img),'',cat.encode('utf-8'),False,True,2)
+                #open get url and open player
+                addDir(name2.encode('utf-8', 'ignore'),(BASE_URL+link).encode('utf-8'),4,str(img),str(img),'',cat.encode('utf-8'),False,True,2)
             total = len(videos_from_channel_re)
             status = 'true'
-            return status,total
-        else:
-            total = 0
-            status = 'false'
-            return status,total
+
     elif cat == 'top':
         data = getRequest(url, '')
         top_battle_re = re.compile('<h3 class=video-item--title>(.+?)</h3><a class=video-item--a href=(.+?)>.+?<img class=video-item--img-img src=(.+?) alt.+?<div class=ellipsis-1>(.+?)<.+?</div>.+?datetime=(.+?)-(.+?)-(.+?)T', re.MULTILINE|re.DOTALL|re.IGNORECASE).findall(data)
@@ -260,61 +249,71 @@ def list_rumble(url,cat):
                     time_ = month+'/'+day+'/'+year
                 else:
                     time_ = day+'/'+month+'/'+year
-                time_pt = day+'/'+month+'/'+year
-                link2 = 'https://rumble.com'+link
                 name2 = '[B]'+name+'[/B]\n[COLOR gold]'+channel+' - [COLOR lime]'+time_+'[/COLOR]'
-                addDir(name2.encode('utf-8', 'ignore'),link2.encode('utf-8'),4,str(img),str(img),'',cat.encode('utf-8'),False,True,2)
+                #open get url and open player
+                addDir(name2.encode('utf-8', 'ignore'),(BASE_URL+link).encode('utf-8'),4,str(img),str(img),'',cat.encode('utf-8'),False,True,2)
             total = len(top_battle_re)
             status = 'true'
-            return status,total
-        else:
-            total = 0
-            status = 'false'
-            return status,total
-    else:
-        total = 0
-        status = 'false'
-        return status,total
 
+    return status, total
 
 
 def resolver(url):
-    data = getRequest(url, '')
+
+    playbackMethod = ADDON.getSetting('playbackMethod')
+
+    # palyback options - 0: large to small, 1: small to large, 2: quality select
+
+    mediaURL = None
+
+    if playbackMethod == '2':
+       urls = []
+
+    data = getRequest(url)
     embed_re = re.compile(',"embedUrl":"(.*?)",', re.MULTILINE|re.DOTALL|re.IGNORECASE).findall(data)
-    if embed_re !=[]:
-        data = getRequest(embed_re[0], '')
-        sd_480 = re.compile('480,.+?url.+?:"(.*?)",', re.MULTILINE|re.DOTALL|re.IGNORECASE).findall(data)
-        hd_720 = re.compile('720,.+?url.+?:"(.*?)",', re.MULTILINE|re.DOTALL|re.IGNORECASE).findall(data)
-        fhd_1080 = re.compile('1080,.+?url.+?:"(.*?)",', re.MULTILINE|re.DOTALL|re.IGNORECASE).findall(data)
-        sd_360 = re.compile('360,.+?url.+?:"(.*?)",', re.MULTILINE|re.DOTALL|re.IGNORECASE).findall(data)
-        if fhd_1080 !=[]:
-            url = fhd_1080[0].replace('\\/', '/')
-        elif hd_720 !=[]:
-            url = hd_720[0].replace('\\/', '/')
-        elif sd_480 !=[]:
-            url = sd_480[0].replace('\\/', '/')
-        elif sd_360 !=[]:
-            url = sd_360[0].replace('\\/', '/')
-        else:
-            url = ''
-    else:
-        url = ''
-    return url
+    if embed_re:
+        data = getRequest(embed_re[0])
+        sizes = [ '1080', '720', '480', '360' ]
+
+        # reverses array - small to large
+        if playbackMethod == '1':
+            sizes = sizes[::-1]
+
+        for quality in sizes:
+
+            matches = re.compile('"' + quality + '":.+?url.+?:"(.*?)",', re.MULTILINE|re.DOTALL|re.IGNORECASE).findall(data)
+
+            if matches:
+                if playbackMethod == '2':
+                    urls.append(( quality, matches[0] ))
+                else:
+                    mediaURL = matches[0]
+                    break
+
+        # quality select
+        if playbackMethod == '2':
+            if len(urls) > 0:
+                selectedIndex = xbmcgui.Dialog().select(
+                    'Select Quality', [(sourceItem[0] or '?') for sourceItem in urls]
+                )
+                if selectedIndex != -1:
+                    mediaURL = urls[selectedIndex][1]
+
+    return mediaURL.replace('\/', '/')
 
 
 def play_video(name, url, iconimage, play=2):
+
     url = resolver(url)
+
+    li = xbmcgui.ListItem(name, path=url)
+    li.setArt({"icon": iconimage, "thumb": iconimage})
+    li.setInfo(type='video', infoLabels={'Title': name, 'plot': ''})
+
     if play == 1:
-        li = xbmcgui.ListItem(name, path=url)
-        li.setArt({"icon": iconimage, "thumb": iconimage})
-        li.setInfo(type='video', infoLabels={'Title': name, 'plot': ''})
         xbmc.Player().play(item=url, listitem=li)
     elif play == 2:
-        li = xbmcgui.ListItem(name, path=url)
-        li.setArt({"icon": iconimage, "thumb": iconimage})
-        li.setInfo(type='video', infoLabels={'Title': name, 'plot': ''})
         xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, li)
-
 
 
 def search_items(url,cat):
@@ -350,12 +349,12 @@ def getFavorites():
 
                 addDir(name.encode('utf-8', 'ignore'),url.encode('utf-8'),mode,str(iconimage),str(fanArt),str(description).encode('utf-8', 'ignore'),cat.encode('utf-8'),folder,True,int(play))
             SetView('WideList')
-            xbmcplugin.endOfDirectory(addon_handle)
+            xbmcplugin.endOfDirectory(PLUGIN_ID)
         else:
             xbmcgui.Dialog().ok('[B]'+xbmc.getLocalizedString(14117)+'[/B]',__language__(30155))
     except:
         SetView('WideList')
-        xbmcplugin.endOfDirectory(addon_handle)
+        xbmcplugin.endOfDirectory(PLUGIN_ID)
 
 
 def addFavorite(name,url,fav_mode,iconimage,fanart,description,cat,folder,play):
@@ -412,7 +411,7 @@ def addDir(name,url,mode,iconimage,fanart,description,cat,folder=True,favorite=F
     if fanart > '':
         li.setProperty('fanart_image', fanart)
     else:
-        li.setProperty('fanart_image', home+'/fanart.jpg')
+        li.setProperty('fanart_image', HOME_DIR+'/fanart.jpg')
     if favorite:
         try:
             name_fav = json.dumps(name.decode('utf-8'))
@@ -428,43 +427,31 @@ def addDir(name,url,mode,iconimage,fanart,description,cat,folder=True,favorite=F
             li.addContextMenuItems(contextMenu)
         except:
             pass
-    xbmcplugin.addDirectoryItem(handle=addon_handle, url=u, listitem=li, isFolder=folder)
+    xbmcplugin.addDirectoryItem(handle=PLUGIN_ID, url=u, listitem=li, isFolder=folder)
 
 
 def SetView(name):
-    if name == 'Wall':
-        try:
-            xbmc.executebuiltin('Container.SetViewMode(500)')
-        except:
-            pass
-    if name == 'List':
-        try:
-            xbmc.executebuiltin('Container.SetViewMode(50)')
-        except:
-            pass
-    if name == 'Poster':
-        try:
-            xbmc.executebuiltin('Container.SetViewMode(51)')
-        except:
-            pass
-    if name == 'Shift':
-        try:
-            xbmc.executebuiltin('Container.SetViewMode(53)')
-        except:
-            pass
-    if name == 'InfoWall':
-        try:
-            xbmc.executebuiltin('Container.SetViewMode(54)')
-        except:
-            pass
-    if name == 'WideList':
-        try:
-            xbmc.executebuiltin('Container.SetViewMode(55)')
-        except:
-            pass
+
     if name == 'Fanart':
+        view_num = 502
+    elif name == 'Wall':
+        view_num = 500
+    elif name == 'WideList':
+        view_num = 55
+    elif name == 'InfoWall':
+        view_num = 54
+    elif name == 'Shift':
+        view_num = 53
+    elif name == 'Poster':
+        view_num = 51
+    elif name == 'List':
+        view_num = 50
+    else:
+        view_num = 0
+
+    if view_num > 0:
         try:
-            xbmc.executebuiltin('Container.SetViewMode(502)')
+            xbmc.executebuiltin('Container.SetViewMode(' + str( view_num ) + ')')
         except:
             pass
 
@@ -486,7 +473,6 @@ def get_params():
                 param[splitparams[0]]=splitparams[1]
 
     return param
-
 
 
 def main():
@@ -561,7 +547,7 @@ def main():
     if mode==None:
         home_menu()
     elif mode==1:
-        select_search()
+        search_menu()
     elif mode==2:
         search_items(url,cat)
     elif mode==3:
