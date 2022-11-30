@@ -411,7 +411,7 @@ def addDir(name,url,mode,iconimage,fanart,description,cat,folder=True,favorite=F
     if fanart > '':
         li.setProperty('fanart_image', fanart)
     else:
-        li.setProperty('fanart_image', HOME_DIR+'/fanart.jpg')
+        li.setProperty('fanart_image', HOME_DIR+'fanart.jpg')
     if favorite:
         try:
             name_fav = json.dumps(name.decode('utf-8'))
