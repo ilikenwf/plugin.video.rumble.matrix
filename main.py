@@ -142,9 +142,9 @@ def home_menu():
 def search_menu():
 
     # Search Video
-    addDir('[B]'+__language__(30100)+'[/B]',BASE_URL+'/search/video?q='.encode('utf-8'),2,search_icon,'','','video')
+    addDir('[B]'+__language__(30100)+'[/B]',BASE_URL+'/search/video?q=',2,search_icon,'','','video')
     # Search Channel
-    addDir('[B]'+__language__(30101)+'[/B]',BASE_URL+'/search/channel?q='.encode('utf-8'),2,search_icon,'','','channel')
+    addDir('[B]'+__language__(30101)+'[/B]',BASE_URL+'/search/channel?q=',2,search_icon,'','','channel')
     SetView('WideList')
     xbmcplugin.endOfDirectory(PLUGIN_ID)
 
