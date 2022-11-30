@@ -32,7 +32,7 @@ ADDON = xbmcaddon.Addon()
 ADDON_ICON = ADDON.getAddonInfo('icon')
 ADDON_NAME = ADDON.getAddonInfo('name')
 
-HOME_DIR = 'special://home/addons/'.format(PLUGIN_NAME)
+HOME_DIR = 'special://home/addons/{0}/'.format(PLUGIN_NAME)
 RESOURCE_DIR = HOME_DIR + 'resources/'
 
 #language
