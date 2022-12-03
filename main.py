@@ -184,69 +184,64 @@ def get_image(data,id):
     return image
 
 
-def list_rumble(url,cat):
+def list_rumble(url, cat):
 
-    total = 0
+    amount = 0
     status = False
+    data = getRequest(url)
 
     if 'search' in url and cat == 'video':
-        data = getRequest(url, '')
-        videos_re = re.compile('<h3 class=video-item--title>(.+?)</h3><a class=video-item--a href=(.+?)><img class=video-item--img src=(.+?) alt.+?<div class=ellipsis-1>(.+?)<.+?</div>.+?datetime=(.+?)-(.+?)-(.+?)T', re.MULTILINE|re.DOTALL|re.IGNORECASE).findall(data)
-        if videos_re !=[]:
-            for name, link, img, channel, year, month, day in videos_re:
-                if int(lang) == 0:
-                    time_ = month+'/'+day+'/'+year
-                else:
-                    time_ = day+'/'+month+'/'+year
-                name2 = '[B]'+name+'[/B]\n[COLOR gold]'+channel+' - [COLOR lime]'+time_+'[/COLOR]'
-                #open get url and open player
-                addDir(name2.encode('utf-8', 'ignore'),(BASE_URL+link).encode('utf-8'),4,str(img),str(img),'',cat.encode('utf-8'),False,True,1)
-            total = len(videos_re)
-            status = True
+            status, amount = create_dir_list( data, cat, 'video', 1 )
 
     elif 'search' in url and cat == 'channel':
-        data = getRequest(url, '')
-        channel_re = re.compile("<li.+?video-listing-entry.+?<a class=channel-item--a href=(.+?)>.+?<i class='user-image user-image--img user-image--img--id-(.+?)'>.+?<h3 class=channel-item--title>(.+?)</h3>.+?<span class=channel-item--subscribers>(.+?) subscribers</span>.+?</li>",re.DOTALL).findall(data)
-        if channel_re !=[]:
-            for link, img_id, channel_name, subscribers in channel_re:
-                img = get_image(data,img_id)
-                name2 = '[B]'+channel_name+'[/B]\n[COLOR palegreen]'+subscribers+' [COLOR yellow]'+__language__(30155)+'[/COLOR]'
-                #open get url and open player
-                addDir(name2.encode('utf-8', 'ignore'),(BASE_URL+link).encode('utf-8'),3,str(img),str(img),'',cat.encode('utf-8'),True,True)
-            total = len(channel_re)
-            status = True
+            status, amount = create_dir_list( data, cat, 'channel' )
 
     elif cat == 'channel' or cat == 'other':
-        data = getRequest(url, '')
-        videos_from_channel_re = re.compile('<h3 class=video-item--title>(.+?)</h3><a class=video-item--a href=(.+?)><img class=video-item--img src=(.+?) alt.+?<div class=ellipsis-1>(.+?)<.+?</div>.+?datetime=(.+?)-(.+?)-(.+?)T', re.MULTILINE|re.DOTALL|re.IGNORECASE).findall(data)
-        if videos_from_channel_re !=[]:
-            for name, link, img, channel, year, month, day in videos_from_channel_re:
-                if int(lang) == 0:
-                    time_ = month+'/'+day+'/'+year
-                else:
-                    time_ = day+'/'+month+'/'+year
-                name2 = '[B]'+name+'[/B]\n[COLOR gold]'+channel+' - [COLOR lime]'+time_+'[/COLOR]'
-                #open get url and open player
-                addDir(name2.encode('utf-8', 'ignore'),(BASE_URL+link).encode('utf-8'),4,str(img),str(img),'',cat.encode('utf-8'),False,True,2)
-            total = len(videos_from_channel_re)
-            status = True
+            status, amount = create_dir_list( data, cat, 'video', 2 )
 
     elif cat == 'top':
-        data = getRequest(url, '')
-        top_battle_re = re.compile('<h3 class=video-item--title>(.+?)</h3><a class=video-item--a href=(.+?)>.+?<img class=video-item--img-img src=(.+?) alt.+?<div class=ellipsis-1>(.+?)<.+?</div>.+?datetime=(.+?)-(.+?)-(.+?)T', re.MULTILINE|re.DOTALL|re.IGNORECASE).findall(data)
-        if top_battle_re !=[]:
-            for name, link, img, channel, year, month, day in top_battle_re:
-                if int(lang) == 0:
-                    time_ = month+'/'+day+'/'+year
-                else:
-                    time_ = day+'/'+month+'/'+year
-                name2 = '[B]'+name+'[/B]\n[COLOR gold]'+channel+' - [COLOR lime]'+time_+'[/COLOR]'
-                #open get url and open player
-                addDir(name2.encode('utf-8', 'ignore'),(BASE_URL+link).encode('utf-8'),4,str(img),str(img),'',cat.encode('utf-8'),False,True,2)
-            total = len(top_battle_re)
-            status = True
+            status, amount = create_dir_list( data, cat, 'video', 2 )
 
-    return status, total
+    return status, amount
+
+
+def create_dir_list( data, cat, type='video', play=False ):
+
+    amount = 0
+    status = False
+
+    if type == 'video':
+        videos = re.compile('<h3 class=video-item--title>(.+?)</h3><a class=video-item--a href=(.+?)><img class=video-item--img src=(.+?) alt.+?<div class=ellipsis-1>(.+?)</div>.+?datetime=(.+?)-(.+?)-(.+?)T', re.MULTILINE|re.DOTALL|re.IGNORECASE).findall(data)
+        if videos:
+            amount = len(videos)
+            status = True
+            for name, link, img, channel, year, month, day in videos:
+                if '<svg' in channel:
+                    channel = channel.split('<svg')[0]
+
+                if int(lang) == 0:
+                    video_date = month+'/'+day+'/'+year
+                else:
+                    video_date = day+'/'+month+'/'+year
+
+                video_title = '[B]' + name + '[/B]\n[COLOR gold]' + channel + ' - [COLOR lime]' + video_date + '[/COLOR]'
+                #open get url and open player
+                addDir( video_title, BASE_URL + link, 4, str(img), str(img), '', cat, False, True, play )
+
+    else:
+        channels = re.compile("<li.+?video-listing-entry.+?<a class=channel-item--a href=(.+?)>.+?<i class='user-image user-image--img user-image--img--id-(.+?)'>.+?<h3 class=channel-item--title>(.+?)</h3>.+?<span class=channel-item--subscribers>(.+?) subscribers</span>.+?</li>",re.DOTALL).findall(data)
+        if channels:
+            amount = len(channels)
+            status = True
+            for link, img_id, channel_name, subscribers in channels:
+                if '<svg' in channel_name:
+                    channel_name = channel_name.split('<svg')[0]
+                img = str( get_image( data, img_id ) )
+                video_title = '[B]' + channel_name + '[/B]\n[COLOR palegreen]' + subscribers + ' [COLOR yellow]' + __language__(30155) + '[/COLOR]'
+                #open get url and open player
+                addDir( video_title, BASE_URL + link, 3, img, img, '', cat, True, True, play )
+
+    return status, amount
 
 
 def resolver(url):
