@@ -1,4 +1,6 @@
-import sys
+import sys, re, os
+import xbmc, xbmcplugin, xbmcgui, xbmcaddon, xbmcvfs
+
 try:
     import cookielib
 except ImportError:
@@ -11,13 +13,7 @@ try:
     import urllib2
 except ImportError:
     import urllib.request as urllib2
-import re
-import os
-import xbmc
-import xbmcplugin
-import xbmcgui
-import xbmcaddon
-import xbmcvfs
+
 try:
     import json
 except:
