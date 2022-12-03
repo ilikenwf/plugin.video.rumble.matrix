@@ -322,11 +322,13 @@ def search_items(url,cat):
 
 
 def getFavorites():
+
     try:
-        try:
-            items = json.loads(open(favorites).read())
-        except:
-            items = ''
+        items = json.loads(open(favorites).read())
+    except:
+        items = ''
+
+    try:
         total = len(items)
         if int(total) > 0:
             for i in items:
@@ -343,7 +345,6 @@ def getFavorites():
                 else:
                     folder = False
                 play = i[8]
-
 
                 addDir(name.encode('utf-8', 'ignore'),url.encode('utf-8'),mode,str(iconimage),str(fanArt),str(description).encode('utf-8', 'ignore'),cat.encode('utf-8'),folder,True,int(play))
             SetView('WideList')
@@ -368,7 +369,6 @@ def addFavorite(name,url,fav_mode,iconimage,fanart,description,cat,folder,play):
         a.write(json.dumps(favList))
         a.close()
         notify(__language__(30152),name,iconimage)
-        #xbmc.executebuiltin("XBMC.Container.Refresh")
     else:
         a = open(favorites).read()
         data = json.loads(a)
@@ -377,7 +377,6 @@ def addFavorite(name,url,fav_mode,iconimage,fanart,description,cat,folder,play):
         b.write(json.dumps(data))
         b.close()
         notify(__language__(30152),name,iconimage)
-        #xbmc.executebuiltin("XBMC.Container.Refresh")
 
 
 def rmFavorite(name):
@@ -390,14 +389,14 @@ def rmFavorite(name):
             b.close()
             break
     notify(__language__(30154))
-    #xbmc.executebuiltin("XBMC.Container.Refresh")
 
 
 def addDir(name,url,mode,iconimage,fanart,description,cat,folder=True,favorite=False,play=False):
+
+    link = PLUGIN_URL + "?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&fanart="+urllib.quote_plus(fanart)+"&iconimage="+urllib.quote_plus(iconimage)+"&description="+urllib.quote_plus(description)+"&cat="+urllib.quote_plus(cat)
     if play:
-        u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&fanart="+urllib.quote_plus(fanart)+"&iconimage="+urllib.quote_plus(iconimage)+"&description="+urllib.quote_plus(description)+"&cat="+urllib.quote_plus(cat)+"&play="+str(play)
-    else:
-        u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&fanart="+urllib.quote_plus(fanart)+"&iconimage="+urllib.quote_plus(iconimage)+"&description="+urllib.quote_plus(description)+"&cat="+urllib.quote_plus(cat)
+        link = link + "&play="+str(play)
+        
     li=xbmcgui.ListItem(name)
     if folder:
         li.setArt({'icon': 'DefaultFolder.png', 'thumb': iconimage})
@@ -410,11 +409,12 @@ def addDir(name,url,mode,iconimage,fanart,description,cat,folder=True,favorite=F
         li.setProperty('fanart_image', fanart)
     else:
         li.setProperty('fanart_image', HOME_DIR+'fanart.jpg')
+
     if favorite:
         try:
-            name_fav = json.dumps(name.decode('utf-8'))
+            name_fav = json.dumps(name)
         except:
-            name_fav = name.decode('utf-8')
+            name_fav = name
         try:
             contextMenu = []
             if name_fav in FAV:
@@ -425,7 +425,7 @@ def addDir(name,url,mode,iconimage,fanart,description,cat,folder=True,favorite=F
             li.addContextMenuItems(contextMenu)
         except:
             pass
-    xbmcplugin.addDirectoryItem(handle=PLUGIN_ID, url=u, listitem=li, isFolder=folder)
+    xbmcplugin.addDirectoryItem(handle=PLUGIN_ID, url=link, listitem=li, isFolder=folder)
 
 
 def SetView(name):
@@ -455,22 +455,7 @@ def SetView(name):
 
 
 def get_params():
-    param=[]
-    paramstring=sys.argv[2]
-    if len(paramstring)>=2:
-        params=sys.argv[2]
-        cleanedparams=params.replace('?','')
-        if (params[len(params)-1]=='/'):
-            params=params[0:len(params)-2]
-        pairsofparams=cleanedparams.split('&')
-        param={}
-        for i in range(len(pairsofparams)):
-            splitparams={}
-            splitparams=pairsofparams[i].split('=')
-            if (len(splitparams))==2:
-                param[splitparams[0]]=splitparams[1]
-
-    return param
+    return dict(urllib.parse_qsl(sys.argv[2][1:], keep_blank_values=True))
 
 
 def main():
