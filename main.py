@@ -442,73 +442,62 @@ def get_params():
 
 
 def main():
+
     params=get_params()
-    url=None
-    name=None
-    mode=None
-    iconimage=None
-    fanart=None
-    description=None
-    cat=None
-    search=None
-    folder=None
-    fav_mode=None
-    play=1
-    page=1
 
     try:
         url=urllib.unquote_plus(params["url"])
     except:
-        pass
+        url=None
     try:
         name=urllib.unquote_plus(params["name"])
     except:
-        pass
+        name=None
     try:
         iconimage=urllib.unquote_plus(params["iconimage"])
     except:
-        pass
+        iconimage=None
     try:
         mode=int(params["mode"])
     except:
-        pass
+        mode=None
     try:
         fanart=urllib.unquote_plus(params["fanart"])
     except:
-        pass
+        fanart=None
     try:
         description=urllib.unquote_plus(params["description"])
     except:
-        pass
+        description=None
 
     try:
         subtitle=urllib.unquote_plus(params["subtitle"])
     except:
-        pass
+        subtitle=None
     try:
         cat=urllib.unquote_plus(params["cat"])
     except:
-        pass
+        cat=None
     try:
         search=urllib.unquote_plus(params["search"])
     except:
-        pass
+        search=None
     try:
         page=int(params["page"])
     except:
-        pass
+        page=1
     try:
         folder=urllib.unquote_plus(params["folder"])
     except:
-        pass
+        folder=None
     try:
         fav_mode=int(params["fav_mode"])
     except:
-        pass
+        fav_mode=None
     try:
         play=int(params["play"])
     except:
-        pass
+        play=1
 
     if mode==None:
         home_menu()
