@@ -32,8 +32,9 @@ ADDON = xbmcaddon.Addon()
 ADDON_ICON = ADDON.getAddonInfo('icon')
 ADDON_NAME = ADDON.getAddonInfo('name')
 
-HOME_DIR = 'special://home/addons/{0}/'.format(PLUGIN_NAME)
+HOME_DIR = 'special://home/addons/{0}'.format(PLUGIN_NAME)
 RESOURCE_DIR = HOME_DIR + 'resources/'
+MEDIA_DIR = RESOURCE_DIR + 'media/'
 
 #language
 __language__ = ADDON.getLocalizedString
@@ -42,20 +43,6 @@ try:
     profile = xbmcvfs.translatePath(ADDON.getAddonInfo('profile').decode('utf-8'))
 except:
     profile = xbmcvfs.translatePath(ADDON.getAddonInfo('profile'))
-
-search_icon = RESOURCE_DIR+'media/search.png'
-favorite_icon = RESOURCE_DIR+'media/favorite.png'
-recommended_icon = RESOURCE_DIR+'media/recommended.png'
-news_icon = RESOURCE_DIR+'media/news.png'
-viral_icon = RESOURCE_DIR+'media/viral.png'
-podcast_icon = RESOURCE_DIR+'media/podcast.png'
-leader_icon = RESOURCE_DIR+'media/leader.png'
-entertaiment_icon = RESOURCE_DIR+'media/entertaiment.png'
-sports_icon = RESOURCE_DIR+'media/sports.png'
-science_icon = RESOURCE_DIR+'media/science.png'
-technology_icon = RESOURCE_DIR+'media/technology.png'
-vlog_icon = RESOURCE_DIR+'media/vlog.png'
-settings_icon = RESOURCE_DIR+'media/settings.png'
 
 lang = ADDON.getSetting('lang')
 favorites = os.path.join(profile, 'favorites.dat')
@@ -111,29 +98,29 @@ def getRequest(url, ref=''):
 def home_menu():
 
     # Search
-    addDir('[B]'+xbmc.getLocalizedString(137)+'[/B]','',1,search_icon,'','','')
+    addDir('[B]'+xbmc.getLocalizedString(137)+'[/B]','',1,MEDIA_DIR + 'search.png','','','')
     # Favorites
-    addDir('[B]'+xbmc.getLocalizedString(1036)+'[/B]','',7,favorite_icon,'','','')
+    addDir('[B]'+xbmc.getLocalizedString(1036)+'[/B]','',7,MEDIA_DIR + 'favorite.png','','','')
     # News
-    addDir('[B]'+xbmc.getLocalizedString(29916)+'[/B]',BASE_URL+'/category/news',3,news_icon,'','','other')
+    addDir('[B]'+xbmc.getLocalizedString(29916)+'[/B]',BASE_URL+'/category/news',3,MEDIA_DIR + 'news.png','','','other')
     # Viral
-    addDir('[B]'+__language__(30050)+'[/B]',BASE_URL+'/category/viral',3,viral_icon,'','','other')
+    addDir('[B]'+__language__(30050)+'[/B]',BASE_URL+'/category/viral',3,MEDIA_DIR + 'viral.png','','','other')
     # Podcasts
-    addDir('[B]'+__language__(30051)+'[/B]',BASE_URL+'/category/podcasts',3,podcast_icon,'','','other')
+    addDir('[B]'+__language__(30051)+'[/B]',BASE_URL+'/category/podcasts',3,MEDIA_DIR +'podcast.png','','','other')
     # Battle Leaderboard
-    addDir('[B]'+__language__(30052)+'[/B]',BASE_URL+'/battle-leaderboard',3,leader_icon,'','','top')
+    addDir('[B]'+__language__(30052)+'[/B]',BASE_URL+'/battle-leaderboard',3,MEDIA_DIR + 'leader.png','','','top')
     # Entertainment
-    addDir('[B]'+__language__(30053)+'[/B]',BASE_URL+'/category/entertainment',3,entertaiment_icon,'','','other')
+    addDir('[B]'+__language__(30053)+'[/B]',BASE_URL+'/category/entertainment',3,MEDIA_DIR + 'entertaiment.png','','','other')
     # Sports
-    addDir('[B]'+xbmc.getLocalizedString(19548)+'[/B]',BASE_URL+'/category/sports',3,sports_icon,'','','other')
+    addDir('[B]'+xbmc.getLocalizedString(19548)+'[/B]',BASE_URL+'/category/sports',3,MEDIA_DIR + 'sports.png','','','other')
     # Science
-    addDir('[B]'+xbmc.getLocalizedString(29948)+'[/B]',BASE_URL+'/category/science',3,science_icon,'','','other')
+    addDir('[B]'+xbmc.getLocalizedString(29948)+'[/B]',BASE_URL+'/category/science',3,MEDIA_DIR + 'science.png','','','other')
     # Technology
-    addDir('[B]'+__language__(30054)+'[/B]',BASE_URL+'/category/technology',3,technology_icon,'','','other')
+    addDir('[B]'+__language__(30054)+'[/B]',BASE_URL+'/category/technology',3,MEDIA_DIR + 'technology.png','','','other')
     # Vlogs
-    addDir('[B]'+__language__(30055)+'[/B]',BASE_URL+'/category/vlogs',3,vlog_icon,'','','other')
+    addDir('[B]'+__language__(30055)+'[/B]',BASE_URL+'/category/vlogs',3,MEDIA_DIR + 'vlog.png','','','other')
     # Settings
-    addDir('[B]'+xbmc.getLocalizedString(5)+'[/B]','',8,settings_icon,'','','')
+    addDir('[B]'+xbmc.getLocalizedString(5)+'[/B]','',8,MEDIA_DIR + 'settings.png','','','')
     SetView('WideList')
     xbmcplugin.endOfDirectory(PLUGIN_ID, cacheToDisc=False)
 
@@ -142,19 +129,22 @@ def home_menu():
 def search_menu():
 
     # Search Video
-    addDir('[B]'+__language__(30100)+'[/B]',BASE_URL+'/search/video?q=',2,search_icon,'','','video')
+    addDir('[B]'+__language__(30100)+'[/B]',BASE_URL+'/search/video?q=',2,MEDIA_DIR + 'search.png','','','video')
     # Search Channel
-    addDir('[B]'+__language__(30101)+'[/B]',BASE_URL+'/search/channel?q=',2,search_icon,'','','channel')
+    addDir('[B]'+__language__(30101)+'[/B]',BASE_URL+'/search/channel?q=',2,MEDIA_DIR + 'search.png','','','channel')
     SetView('WideList')
     xbmcplugin.endOfDirectory(PLUGIN_ID)
 
 
 def pagination(url,page,cat,search=False):
+
     if url > '':
+
         if search and cat == 'video':
             pageUrl = url + search + "&page=" + str(int(page))
         elif cat == 'channel' or cat == 'other':
             pageUrl = url + "?page=" + str(int(page))
+
         if int(page) == 1:
             if search:
                 status, total = list_rumble(url+search,cat)
@@ -162,6 +152,7 @@ def pagination(url,page,cat,search=False):
                 status, total = list_rumble(url,cat)
         else:
             status, total = list_rumble(pageUrl,cat)
+
         if search and status and cat == 'video' and int(page) < 10 and int(total) > 15:
             name = "[B]"+__language__(30150) + " " + str(int(page) + 1) + "[/B]"
             li=xbmcgui.ListItem(name)
