@@ -217,7 +217,7 @@ def create_dir_list( data, cat, type='video', play=False ):
             status = True
             for name, link, img, channel, year, month, day in videos:
                 if '<svg' in channel:
-                    channel = channel.split('<svg')[0]
+                    channel = channel.split('<svg')[0] + " (Verified)"
 
                 if int(lang) == 0:
                     video_date = month+'/'+day+'/'+year
@@ -235,7 +235,7 @@ def create_dir_list( data, cat, type='video', play=False ):
             status = True
             for link, img_id, channel_name, subscribers in channels:
                 if '<svg' in channel_name:
-                    channel_name = channel_name.split('<svg')[0]
+                    channel_name = channel_name.split('<svg')[0] + " (Verified)"
                 img = str( get_image( data, img_id ) )
                 video_title = '[B]' + channel_name + '[/B]\n[COLOR palegreen]' + subscribers + ' [COLOR yellow]' + __language__(30155) + '[/COLOR]'
                 #open get url and open player
