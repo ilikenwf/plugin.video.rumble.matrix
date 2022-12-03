@@ -157,24 +157,24 @@ def pagination(url,page,cat,search=False):
             pageUrl = url + "?page=" + str(int(page))
         if int(page) == 1:
             if search:
-                status,total = list_rumble(url+search,cat)
+                status, total = list_rumble(url+search,cat)
             else:
-                status,total = list_rumble(url,cat)
+                status, total = list_rumble(url,cat)
         else:
-            status,total = list_rumble(pageUrl,cat)
-        if search and status == 'true' and cat == 'video' and int(page) < 10 and int(total) > 15:
+            status, total = list_rumble(pageUrl,cat)
+        if search and status and cat == 'video' and int(page) < 10 and int(total) > 15:
             name = "[B]"+__language__(30150) + " " + str(int(page) + 1) + "[/B]"
             li=xbmcgui.ListItem(name)
             u=sys.argv[0] + "?mode=3&name=" + urllib.quote_plus(name) + \
             "&url=" + urllib.quote_plus(url) + "&page=" + str(int(page) + 1) + "&cat=" + urllib.quote_plus(cat)+ "&search=" + urllib.quote_plus(search)
             xbmcplugin.addDirectoryItem(PLUGIN_ID, u, li, True)
-        elif not search and cat == 'channel' and status == 'true' and int(page) < 10 and int(total) > 15:
+        elif not search and cat == 'channel' and status and int(page) < 10 and int(total) > 15:
             name = "[B]"+__language__(30150) + " " + str(int(page) + 1) + "[/B]"
             li=xbmcgui.ListItem(name)
             u=sys.argv[0] + "?mode=3&name=" + urllib.quote_plus(name) + \
             "&url=" + urllib.quote_plus(url) + "&page=" + str(int(page) + 1) + "&cat=" + urllib.quote_plus(cat)
             xbmcplugin.addDirectoryItem(PLUGIN_ID, u, li, True)
-        elif not search and cat == 'other' and status == 'true' and int(page) < 10 and int(total) > 15:
+        elif not search and cat == 'other' and status and int(page) < 10 and int(total) > 15:
             name = "[B]"+__language__(30150) + " " + str(int(page) + 1) + "[/B]"
             li=xbmcgui.ListItem(name)
             u=sys.argv[0] + "?mode=3&name=" + urllib.quote_plus(name) + \
@@ -196,7 +196,7 @@ def get_image(data,id):
 def list_rumble(url,cat):
 
     total = 0
-    status = 'false'
+    status = False
 
     if 'search' in url and cat == 'video':
         data = getRequest(url, '')
@@ -211,7 +211,7 @@ def list_rumble(url,cat):
                 #open get url and open player
                 addDir(name2.encode('utf-8', 'ignore'),(BASE_URL+link).encode('utf-8'),4,str(img),str(img),'',cat.encode('utf-8'),False,True,1)
             total = len(videos_re)
-            status = 'true'
+            status = True
 
     elif 'search' in url and cat == 'channel':
         data = getRequest(url, '')
@@ -223,7 +223,7 @@ def list_rumble(url,cat):
                 #open get url and open player
                 addDir(name2.encode('utf-8', 'ignore'),(BASE_URL+link).encode('utf-8'),3,str(img),str(img),'',cat.encode('utf-8'),True,True)
             total = len(channel_re)
-            status = 'true'
+            status = True
 
     elif cat == 'channel' or cat == 'other':
         data = getRequest(url, '')
@@ -238,7 +238,7 @@ def list_rumble(url,cat):
                 #open get url and open player
                 addDir(name2.encode('utf-8', 'ignore'),(BASE_URL+link).encode('utf-8'),4,str(img),str(img),'',cat.encode('utf-8'),False,True,2)
             total = len(videos_from_channel_re)
-            status = 'true'
+            status = True
 
     elif cat == 'top':
         data = getRequest(url, '')
@@ -253,7 +253,7 @@ def list_rumble(url,cat):
                 #open get url and open player
                 addDir(name2.encode('utf-8', 'ignore'),(BASE_URL+link).encode('utf-8'),4,str(img),str(img),'',cat.encode('utf-8'),False,True,2)
             total = len(top_battle_re)
-            status = 'true'
+            status = True
 
     return status, total
 
