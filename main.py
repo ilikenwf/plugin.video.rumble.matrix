@@ -260,11 +260,10 @@ def list_rumble(url,cat):
 
 def resolver(url):
 
+    # playback options - 0: large to small, 1: small to large, 2: quality select
     playbackMethod = ADDON.getSetting('playbackMethod')
 
-    # palyback options - 0: large to small, 1: small to large, 2: quality select
-
-    mediaURL = None
+    mediaURL = False
 
     if playbackMethod == '2':
        urls = []
@@ -299,21 +298,29 @@ def resolver(url):
                 if selectedIndex != -1:
                     mediaURL = urls[selectedIndex][1]
 
-    return mediaURL.replace('\/', '/')
+    if mediaURL:
+        mediaURL = mediaURL.replace('\/', '/')
+
+    return mediaURL
 
 
 def play_video(name, url, iconimage, play=2):
 
     url = resolver(url)
 
-    li = xbmcgui.ListItem(name, path=url)
-    li.setArt({"icon": iconimage, "thumb": iconimage})
-    li.setInfo(type='video', infoLabels={'Title': name, 'plot': ''})
+    if url:
 
-    if play == 1:
-        xbmc.Player().play(item=url, listitem=li)
-    elif play == 2:
-        xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, li)
+        li = xbmcgui.ListItem(name, path=url)
+        li.setArt({"icon": iconimage, "thumb": iconimage})
+        li.setInfo(type='video', infoLabels={'Title': name, 'plot': ''})
+
+        if play == 1:
+            xbmc.Player().play(item=url, listitem=li)
+        elif play == 2:
+            xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, li)
+
+    else:
+        xbmcgui.Dialog().ok( 'Error', 'Video not found' )
 
 
 def search_items(url,cat):
