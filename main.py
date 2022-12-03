@@ -263,7 +263,7 @@ def resolver(url):
     embed_re = re.compile(',"embedUrl":"(.*?)",', re.MULTILINE|re.DOTALL|re.IGNORECASE).findall(data)
     if embed_re:
         data = getRequest(embed_re[0])
-        sizes = [ '1080', '720', '480', '360' ]
+        sizes = [ '1080', '720', '480', '360', 'hls' ]
 
         # reverses array - small to large
         if playbackMethod == '1':
@@ -271,7 +271,7 @@ def resolver(url):
 
         for quality in sizes:
 
-            matches = re.compile('"' + quality + '":.+?url.+?:"(.*?)",', re.MULTILINE|re.DOTALL|re.IGNORECASE).findall(data)
+            matches = re.compile( '"' + quality + '".+?url.+?:"(.*?)"', re.MULTILINE|re.DOTALL|re.IGNORECASE).findall(data)
 
             if matches:
                 if playbackMethod == '2':
