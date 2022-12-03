@@ -32,7 +32,7 @@ ADDON = xbmcaddon.Addon()
 ADDON_ICON = ADDON.getAddonInfo('icon')
 ADDON_NAME = ADDON.getAddonInfo('name')
 
-HOME_DIR = 'special://home/addons/'.format(PLUGIN_NAME)
+HOME_DIR = 'special://home/addons/{0}/'.format(PLUGIN_NAME)
 RESOURCE_DIR = HOME_DIR + 'resources/'
 
 #language
@@ -142,9 +142,9 @@ def home_menu():
 def search_menu():
 
     # Search Video
-    addDir('[B]'+__language__(30100)+'[/B]',BASE_URL+'/search/video?q='.encode('utf-8'),2,search_icon,'','','video')
+    addDir('[B]'+__language__(30100)+'[/B]',BASE_URL+'/search/video?q=',2,search_icon,'','','video')
     # Search Channel
-    addDir('[B]'+__language__(30101)+'[/B]',BASE_URL+'/search/channel?q='.encode('utf-8'),2,search_icon,'','','channel')
+    addDir('[B]'+__language__(30101)+'[/B]',BASE_URL+'/search/channel?q=',2,search_icon,'','','channel')
     SetView('WideList')
     xbmcplugin.endOfDirectory(PLUGIN_ID)
 
@@ -411,7 +411,7 @@ def addDir(name,url,mode,iconimage,fanart,description,cat,folder=True,favorite=F
     if fanart > '':
         li.setProperty('fanart_image', fanart)
     else:
-        li.setProperty('fanart_image', HOME_DIR+'/fanart.jpg')
+        li.setProperty('fanart_image', HOME_DIR+'fanart.jpg')
     if favorite:
         try:
             name_fav = json.dumps(name.decode('utf-8'))
