@@ -136,37 +136,33 @@ def pagination(url,page,cat,search=False):
 
     if url > '':
 
-        if search and cat == 'video':
-            pageUrl = url + search + "&page=" + str(int(page))
-        elif cat == 'channel' or cat == 'other':
-            pageUrl = url + "?page=" + str(int(page))
+        page = int(page)
+        pageUrl = url
 
-        if int(page) == 1:
+        if page == 1:
             if search:
-                status, total = list_rumble(url+search,cat)
-            else:
-                status, total = list_rumble(url,cat)
-        else:
-            status, total = list_rumble(pageUrl,cat)
+                pageUrl = url + search
+        elif search and cat == 'video':
+            pageUrl = url + search + "&page=" + str( page )
+        elif cat == 'channel' or cat == 'other':
+            pageUrl = url + "?page=" + str( page )
 
-        if search and status and cat == 'video' and int(page) < 10 and int(total) > 15:
-            name = "[B]"+__language__(30150) + " " + str(int(page) + 1) + "[/B]"
+        amount = list_rumble( pageUrl, cat )
+
+        if amount > 15 and page < 10:
+
+            # for next page
+            page = page + 1
+
+            name = "[B]"+__language__(30150) + " " + str( page ) + "[/B]"
             li=xbmcgui.ListItem(name)
-            u=sys.argv[0] + "?mode=3&name=" + urllib.quote_plus(name) + \
-            "&url=" + urllib.quote_plus(url) + "&page=" + str(int(page) + 1) + "&cat=" + urllib.quote_plus(cat)+ "&search=" + urllib.quote_plus(search)
-            xbmcplugin.addDirectoryItem(PLUGIN_ID, u, li, True)
-        elif not search and cat == 'channel' and status and int(page) < 10 and int(total) > 15:
-            name = "[B]"+__language__(30150) + " " + str(int(page) + 1) + "[/B]"
-            li=xbmcgui.ListItem(name)
-            u=sys.argv[0] + "?mode=3&name=" + urllib.quote_plus(name) + \
-            "&url=" + urllib.quote_plus(url) + "&page=" + str(int(page) + 1) + "&cat=" + urllib.quote_plus(cat)
-            xbmcplugin.addDirectoryItem(PLUGIN_ID, u, li, True)
-        elif not search and cat == 'other' and status and int(page) < 10 and int(total) > 15:
-            name = "[B]"+__language__(30150) + " " + str(int(page) + 1) + "[/B]"
-            li=xbmcgui.ListItem(name)
-            u=sys.argv[0] + "?mode=3&name=" + urllib.quote_plus(name) + \
-            "&url=" + urllib.quote_plus(url) + "&page=" + str(int(page) + 1) + "&cat=" + urllib.quote_plus(cat)
-            xbmcplugin.addDirectoryItem(PLUGIN_ID, u, li, True)
+            link = PLUGIN_URL + "?mode=3&name=" + urllib.quote_plus(name)+"&url=" + urllib.quote_plus(url) + "&page=" + str( page ) + "&cat=" + urllib.quote_plus(cat)
+
+            if search and cat == 'video':
+                link = link + "&search=" + urllib.quote_plus(search)
+
+            xbmcplugin.addDirectoryItem(PLUGIN_ID, link, li, True)
+
     SetView('WideList')
     xbmcplugin.endOfDirectory(PLUGIN_ID)
 
@@ -183,34 +179,31 @@ def get_image(data,id):
 def list_rumble(url, cat):
 
     amount = 0
-    status = False
     data = getRequest(url)
 
     if 'search' in url and cat == 'video':
-            status, amount = create_dir_list( data, cat, 'video', 1 )
+            amount = create_dir_list( data, cat, 'video', 1 )
 
     elif 'search' in url and cat == 'channel':
-            status, amount = create_dir_list( data, cat, 'channel' )
+            amount = create_dir_list( data, cat, 'channel' )
 
     elif cat == 'channel' or cat == 'other':
-            status, amount = create_dir_list( data, cat, 'video', 2 )
+            amount = create_dir_list( data, cat, 'video', 2 )
 
     elif cat == 'top':
-            status, amount = create_dir_list( data, cat, 'video', 2 )
+            amount = create_dir_list( data, cat, 'video', 2 )
 
-    return status, amount
+    return amount
 
 
 def create_dir_list( data, cat, type='video', play=False ):
 
     amount = 0
-    status = False
 
     if type == 'video':
         videos = re.compile('<h3 class=video-item--title>(.+?)</h3><a class=video-item--a href=(.+?)><img class=video-item--img src=(.+?) alt.+?<div class=ellipsis-1>(.+?)</div>.+?datetime=(.+?)-(.+?)-(.+?)T', re.MULTILINE|re.DOTALL|re.IGNORECASE).findall(data)
         if videos:
             amount = len(videos)
-            status = True
             for name, link, img, channel, year, month, day in videos:
                 if '<svg' in channel:
                     channel = channel.split('<svg')[0] + " (Verified)"
@@ -228,7 +221,6 @@ def create_dir_list( data, cat, type='video', play=False ):
         channels = re.compile("<li.+?video-listing-entry.+?<a class=channel-item--a href=(.+?)>.+?<i class='user-image user-image--img user-image--img--id-(.+?)'>.+?<h3 class=channel-item--title>(.+?)</h3>.+?<span class=channel-item--subscribers>(.+?) subscribers</span>.+?</li>",re.DOTALL).findall(data)
         if channels:
             amount = len(channels)
-            status = True
             for link, img_id, channel_name, subscribers in channels:
                 if '<svg' in channel_name:
                     channel_name = channel_name.split('<svg')[0] + " (Verified)"
@@ -237,7 +229,7 @@ def create_dir_list( data, cat, type='video', play=False ):
                 #open get url and open player
                 addDir( video_title, BASE_URL + link, 3, img, img, '', cat, True, True, play )
 
-    return status, amount
+    return amount
 
 
 def resolver(url):
