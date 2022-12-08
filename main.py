@@ -181,16 +181,12 @@ def list_rumble(url, cat):
     amount = 0
     data = getRequest(url)
 
-    if 'search' in url and cat == 'video':
+    if 'search' in url:
+        if cat == 'video':
             amount = create_dir_list( data, cat, 'video', 1 )
-
-    elif 'search' in url and cat == 'channel':
+        else:
             amount = create_dir_list( data, cat, 'channel' )
-
-    elif cat == 'channel' or cat == 'other':
-            amount = create_dir_list( data, cat, 'video', 2 )
-
-    elif cat == 'top':
+    elif cat in { 'channel', 'top', 'other' }:
             amount = create_dir_list( data, cat, 'video', 2 )
 
     return amount
@@ -201,7 +197,7 @@ def create_dir_list( data, cat, type='video', play=False ):
     amount = 0
 
     if type == 'video':
-        videos = re.compile('<h3 class=video-item--title>(.+?)</h3><a class=video-item--a href=(.+?)><img class=video-item--img src=(.+?) alt.+?<div class=ellipsis-1>(.+?)</div>.+?datetime=(.+?)-(.+?)-(.+?)T', re.MULTILINE|re.DOTALL|re.IGNORECASE).findall(data)
+        videos = re.compile('<h3 class=video-item--title>(.+?)</h3><a class=video-item--a href=([^\>]+)>(?:<div class=video-item--img>)?<img class=video-item--img(?:-img)? src=(.+?) alt.+?<div class=ellipsis-1>(.+?)</div>.+?datetime=(.+?)-(.+?)-(.+?)T', re.MULTILINE|re.DOTALL|re.IGNORECASE).findall(data)
         if videos:
             amount = len(videos)
             for name, link, img, channel, year, month, day in videos:
