@@ -218,8 +218,7 @@ def create_dir_list( data, cat, type='video', search = False, play=False ):
     else:
         channels = re.compile("<li.+?video-listing-entry.+?<a class=channel-item--a href=(.+?)>.+?<i class='user-image user-image--img user-image--img--id-(.+?)'>.+?<h3 class=channel-item--title>(.+?)</h3>.+?<span class=channel-item--subscribers>(.+?) subscribers</span>.+?</li>",re.DOTALL).findall(data)
         if channels:
-            if not search:
-                amount = len(channels)
+            amount = len(channels)
             for link, img_id, channel_name, subscribers in channels:
 
                 # split channel and user
@@ -230,7 +229,6 @@ def create_dir_list( data, cat, type='video', search = False, play=False ):
                     else:
                         if '/user/' not in link:
                             continue
-                    amount = amount+1
 
                 if '<svg' in channel_name:
                     channel_name = channel_name.split('<svg')[0] + " (Verified)"
