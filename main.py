@@ -50,10 +50,13 @@ else:
 
 
 def notify(message,name=False,iconimage=False,timeShown=5000):
-    if name and iconimage:
-        xbmc.executebuiltin('Notification(%s, %s, %d, %s)' % (name, message, timeShown, iconimage))
-    else:
-        xbmc.executebuiltin('Notification(%s, %s, %d, %s)' % (ADDON_NAME, message, timeShown, ADDON_ICON))
+
+    if not name:
+        name = ADDON_NAME
+    if not iconimage:
+        iconimage = ADDON_ICON
+
+    xbmc.executebuiltin('Notification(%s, %s, %d, %s)' % (name, message, timeShown, iconimage))
 
 
 def to_unicode(text, encoding='utf-8', errors='strict'):
