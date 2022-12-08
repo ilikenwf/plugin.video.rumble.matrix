@@ -128,6 +128,8 @@ def search_menu():
     addDir('[B]'+__language__(30100)+'[/B]',BASE_URL+'/search/video?q=',2,MEDIA_DIR + 'search.png','','','video')
     # Search Channel
     addDir('[B]'+__language__(30101)+'[/B]',BASE_URL+'/search/channel?q=',2,MEDIA_DIR + 'search.png','','','channel')
+    # Search User
+    addDir('[B]'+__language__(30102)+'[/B]',BASE_URL+'/search/channel?q=',2,MEDIA_DIR + 'search.png','','','user')
     SetView('WideList')
     xbmcplugin.endOfDirectory(PLUGIN_ID)
 
@@ -144,7 +146,7 @@ def pagination(url,page,cat,search=False):
                 pageUrl = url + search
         elif search and cat == 'video':
             pageUrl = url + search + "&page=" + str( page )
-        elif cat == 'channel' or cat == 'other':
+        elif cat in {'channel', 'user', 'other' }:
             pageUrl = url + "?page=" + str( page )
 
         amount = list_rumble( pageUrl, cat )
@@ -183,16 +185,16 @@ def list_rumble(url, cat):
 
     if 'search' in url:
         if cat == 'video':
-            amount = create_dir_list( data, cat, 'video', 1 )
+            amount = create_dir_list( data, cat, 'video', True, 1 )
         else:
-            amount = create_dir_list( data, cat, 'channel' )
-    elif cat in { 'channel', 'top', 'other' }:
-            amount = create_dir_list( data, cat, 'video', 2 )
+            amount = create_dir_list( data, cat, 'channel', True )
+    elif cat in { 'channel', 'user', 'top', 'other' }:
+            amount = create_dir_list( data, cat, 'video', False, 2 )
 
     return amount
 
 
-def create_dir_list( data, cat, type='video', play=False ):
+def create_dir_list( data, cat, type='video', search = False, play=False ):
 
     amount = 0
 
@@ -200,24 +202,36 @@ def create_dir_list( data, cat, type='video', play=False ):
         videos = re.compile('<h3 class=video-item--title>(.+?)</h3><a class=video-item--a href=([^\>]+)>(?:<div class=video-item--img>)?<img class=video-item--img(?:-img)? src=(.+?) alt.+?<div class=ellipsis-1>(.+?)</div>.+?datetime=(.+?)-(.+?)-(.+?)T', re.MULTILINE|re.DOTALL|re.IGNORECASE).findall(data)
         if videos:
             amount = len(videos)
-            for name, link, img, channel, year, month, day in videos:
-                if '<svg' in channel:
-                    channel = channel.split('<svg')[0] + " (Verified)"
+            for name, link, img, channel_name, year, month, day in videos:
+                if '<svg' in channel_name:
+                    channel_name = channel_name.split('<svg')[0] + " (Verified)"
 
                 if int(lang) == 0:
                     video_date = month+'/'+day+'/'+year
                 else:
                     video_date = day+'/'+month+'/'+year
 
-                video_title = '[B]' + name + '[/B]\n[COLOR gold]' + channel + ' - [COLOR lime]' + video_date + '[/COLOR]'
+                video_title = '[B]' + name + '[/B]\n[COLOR gold]' + channel_name + ' - [COLOR lime]' + video_date + '[/COLOR]'
                 #open get url and open player
                 addDir( video_title, BASE_URL + link, 4, str(img), str(img), '', cat, False, True, play )
 
     else:
         channels = re.compile("<li.+?video-listing-entry.+?<a class=channel-item--a href=(.+?)>.+?<i class='user-image user-image--img user-image--img--id-(.+?)'>.+?<h3 class=channel-item--title>(.+?)</h3>.+?<span class=channel-item--subscribers>(.+?) subscribers</span>.+?</li>",re.DOTALL).findall(data)
         if channels:
-            amount = len(channels)
+            if not search:
+                amount = len(channels)
             for link, img_id, channel_name, subscribers in channels:
+
+                # split channel and user
+                if search:
+                    if cat == 'channel':
+                        if '/c/' not in link:
+                            continue
+                    else:
+                        if '/user/' not in link:
+                            continue
+                    amount = amount+1
+
                 if '<svg' in channel_name:
                     channel_name = channel_name.split('<svg')[0] + " (Verified)"
                 img = str( get_image( data, img_id ) )
