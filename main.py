@@ -351,26 +351,23 @@ def getFavorites():
 
 
 def addFavorite(name,url,fav_mode,iconimage,fanart,description,cat,folder,play):
-    favList = []
+
     if os.path.exists(favorites)==False:
         addonID = xbmcaddon.Addon().getAddonInfo('id')
         addon_data_path = xbmcvfs.translatePath(os.path.join('special://home/userdata/addon_data', addonID))
         if os.path.exists(addon_data_path)==False:
             os.mkdir(addon_data_path)
         xbmc.sleep(7)
-        favList.append((name,url,fav_mode,iconimage,fanart,description,cat,folder,play))
-        a = open(favorites, "w")
-        a.write(json.dumps(favList))
-        a.close()
-        notify(__language__(30152),name,iconimage)
+        favList = []
     else:
-        a = open(favorites).read()
-        data = json.loads(a)
-        data.append((name,url,fav_mode,iconimage,fanart,description,cat,folder,play))
-        b = open(favorites, "w")
-        b.write(json.dumps(data))
-        b.close()
-        notify(__language__(30152),name,iconimage)
+        saved = open(favorites).read()
+        favList = json.loads(saved)
+
+    favList.append((name,url,fav_mode,iconimage,fanart,description,cat,folder,play))
+    a = open(favorites, "w")
+    a.write(json.dumps(favList))
+    a.close()
+    notify(__language__(30152),name,iconimage)
 
 
 def rmFavorite(name):
