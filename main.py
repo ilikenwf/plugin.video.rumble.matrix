@@ -379,7 +379,7 @@ def rmFavorite(name):
             b.write(json.dumps(data))
             b.close()
             break
-    notify(__language__(30154))
+    notify(__language__(30154), name)
 
 
 def addDir(name,url,mode,iconimage,fanart,description,cat,folder=True,favorite=False,play=False):
