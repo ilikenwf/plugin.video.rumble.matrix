@@ -202,10 +202,10 @@ def create_dir_list( data, cat, type='video', search = False, play=False ):
     amount = 0
 
     if type == 'video':
-        videos = re.compile('img\" src=(https:\/\/.+?) alt=(?:[^\>]+)></div><(?:[^\>]+)></span></a><div class=\"video-item--info\"><time class=\"video-item--meta video-item--time\" datetime=(.+?)-(.+?)-(.+?)T(?:.+?) title\=\"(?:[^\"]+)\">(?:[^\<]+)</time><h3 class=video-item--title>(.+?)</h3><address(?:[^\>]+)><a rel=author class=\"(?:[^\=]+)(.+?)><div class=ellipsis-1>(.+?)</div>', re.MULTILINE|re.DOTALL|re.IGNORECASE).findall(data)
+        videos = re.compile('a href=([^\>]+)><div class=\"video-item--img-wrapper\"><img class=\"video-item--img\" src=(https:\/\/.+?) alt=(?:[^\>]+)></div><(?:[^\>]+)></span></a><div class=\"video-item--info\"><time class=\"video-item--meta video-item--time\" datetime=(.+?)-(.+?)-(.+?)T(?:.+?) title\=\"(?:[^\"]+)\">(?:[^\<]+)</time><h3 class=video-item--title>(.+?)</h3><address(?:[^\>]+)><a rel=author class=\"(?:[^\=]+)=(.+?)><div class=ellipsis-1>(.+?)</div>', re.MULTILINE|re.DOTALL|re.IGNORECASE).findall(data)
         if videos:
             amount = len(videos)
-            for img, year, month, day, title, link, channel_name in videos:
+            for link, img, year, month, day, title, channel_link, channel_name in videos:
                 if '<svg' in channel_name:
                     channel_name = channel_name.split('<svg')[0] + " (Verified)"
 
@@ -254,9 +254,12 @@ def resolver(url):
        urls = []
 
     data = getRequest(url)
-    embed_re = re.compile(',"embedUrl":"(.*?)",', re.MULTILINE|re.DOTALL|re.IGNORECASE).findall(data)
-    if embed_re:
-        data = getRequest(embed_re[0])
+
+    # gets embed id from embed url
+    embed_id = re.compile(',\"embedUrl\":\"' + BASE_URL + '/embed/(.*?)\/\",', re.MULTILINE|re.DOTALL|re.IGNORECASE).findall(data)
+    if embed_id:
+        # use site api to get video urls
+        data = getRequest(BASE_URL + '/embedJS/u3/?request=video&ver=2&v=' + embed_id[0])
         sizes = [ '1080', '720', '480', '360', 'hls' ]
 
         # reverses array - small to large
