@@ -202,10 +202,10 @@ def create_dir_list( data, cat, type='video', search = False, play=False ):
     amount = 0
 
     if type == 'video':
-        videos = re.compile('<h3 class=video-item--title>(.+?)</h3><a class=video-item--a href=([^\>]+)>(?:<div class=video-item--img>)?<img class=video-item--img(?:-img)? src=(.+?) alt.+?<div class=ellipsis-1>(.+?)</div>.+?datetime=(.+?)-(.+?)-(.+?)T', re.MULTILINE|re.DOTALL|re.IGNORECASE).findall(data)
+        videos = re.compile('img\" src=(https:\/\/.+?) alt=(?:[^\>]+)></div><(?:[^\>]+)></span></a><div class=\"video-item--info\"><time class=\"video-item--meta video-item--time\" datetime=(.+?)-(.+?)-(.+?)T(?:.+?) title\=\"(?:[^\"]+)\">(?:[^\<]+)</time><h3 class=video-item--title>(.+?)</h3><address(?:[^\>]+)><a rel=author class=\"(?:[^\=]+)(.+?)><div class=ellipsis-1>(.+?)</div>', re.MULTILINE|re.DOTALL|re.IGNORECASE).findall(data)
         if videos:
             amount = len(videos)
-            for name, link, img, channel_name, year, month, day in videos:
+            for img, year, month, day, title, link, channel_name in videos:
                 if '<svg' in channel_name:
                     channel_name = channel_name.split('<svg')[0] + " (Verified)"
 
@@ -214,12 +214,12 @@ def create_dir_list( data, cat, type='video', search = False, play=False ):
                 else:
                     video_date = day+'/'+month+'/'+year
 
-                video_title = '[B]' + name + '[/B]\n[COLOR gold]' + channel_name + ' - [COLOR lime]' + video_date + '[/COLOR]'
+                video_title = '[B]' + title + '[/B]\n[COLOR gold]' + channel_name + ' - [COLOR lime]' + video_date + '[/COLOR]'
                 #open get url and open player
                 addDir( video_title, BASE_URL + link, 4, str(img), str(img), '', cat, False, True, play )
 
     else:
-        channels = re.compile("<li.+?video-listing-entry.+?<a class=channel-item--a href=(.+?)>.+?<i class='user-image user-image--img user-image--img--id-(.+?)'>.+?<h3 class=channel-item--title>(.+?)</h3>.+?<span class=channel-item--subscribers>(.+?) subscribers</span>.+?</li>",re.DOTALL).findall(data)
+        channels = re.compile('a href=(.+?)>\s*<div class=\"channel-item--img\">\s*<i class=\'user-image user-image--img user-image--img--id-(.+?)\'></i>\s*</div>\s*<h3 class=channel-item--title>(.+?)</h3>\s*<span class=channel-item--subscribers>(.+?) subscribers</span>',re.DOTALL).findall(data)
         if channels:
             amount = len(channels)
             for link, img_id, channel_name, subscribers in channels:
